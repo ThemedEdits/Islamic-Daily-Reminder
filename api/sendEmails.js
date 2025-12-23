@@ -1,9 +1,5 @@
 import admin from "firebase-admin";
-
-
-console.log("PROJECT_ID:", process.env.FIREBASE_PROJECT_ID);
-console.log("CLIENT_EMAIL:", process.env.FIREBASE_CLIENT_EMAIL);
-console.log("PRIVATE_KEY EXISTS:", !!process.env.FIREBASE_PRIVATE_KEY);
+import nodemailer from "nodemailer";
 
 // 🔐 Firebase Admin Init
 if (!admin.apps.length) {
@@ -18,10 +14,14 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// 🔐 EmailJS
-const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
-const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
-const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
+// 📧 Nodemailer Transport
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
 // 🔹 Islamic Events
 const EVENTS = {
@@ -54,23 +54,27 @@ async function getHijriDate() {
   };
 }
 
-// 🔹 EmailJS Sender
+// ✉️ Email Sender
 async function sendEmail(to, hijri, gregorian, event) {
-  return fetch("https://api.emailjs.com/api/v1.0/email/send", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      service_id: EMAILJS_SERVICE_ID,
-      template_id: EMAILJS_TEMPLATE_ID,
-      user_id: EMAILJS_PUBLIC_KEY,
-      template_params: {
-        to_email: to,
-        hijri,
-        gregorian,
-        event: event || "No Islamic event today",
-      },
-    }),
-  });
+  const mailOptions = {
+    from: `"Islamic Daily Reminder" <${process.env.GMAIL_USER}>`,
+    to,
+    subject: event
+      ? `🌙 ${event}`
+      : "🌙 Islamic Daily Reminder",
+    html: `
+      <h2>🕌 Islamic Daily Reminder</h2>
+      <p><strong>Hijri Date:</strong> ${hijri}</p>
+      <p><strong>Gregorian Date:</strong> ${gregorian}</p>
+      <p><strong>Event:</strong> ${event || "No Islamic event today"}</p>
+      <hr />
+      <p style="font-size:12px;color:#777;">
+        You are receiving this because you subscribed to Islamic Daily Reminder.
+      </p>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
 }
 
 // 🔥 MAIN HANDLER
@@ -93,6 +97,7 @@ export default async function handler(req, res) {
         hijriData.gregorian,
         event
       );
+
       sent++;
     }
 
