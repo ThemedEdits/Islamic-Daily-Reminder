@@ -1,48 +1,86 @@
-import { auth, db } from "./firebase.js";
-import { doc, setDoc, deleteDoc, serverTimestamp } from
-  "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase.js";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { getHijriToday } from "./hijri.js";
-import { getEvent } from "./events.js";
-
+const emailInput = document.getElementById("subEmail");
+const languageSelect = document.getElementById("language");
 const status = document.getElementById("status");
-const subEmail = document.getElementById("subEmail");
-const subscribeBtn = document.getElementById("subscribeBtn");
-const unsubscribeBtn = document.getElementById("unsubscribeBtn");
 
-auth.onAuthStateChanged(async user => {
-  if (!user) location.href = "index.html";
+document.getElementById("subscribeBtn").addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const language = languageSelect.value;
 
-  const date = await getHijriToday();
-  const event = getEvent(date.hijriDay, date.hijriMonthNumber);
-
-  dates.innerHTML = `
-    <p><b>Hijri:</b> ${date.hijri}</p>
-    <p><b>Gregorian:</b> ${date.gregorian}</p>
-  `;
-
-  eventBox.innerHTML = event
-    ? `<p><b>Event:</b> ${event}</p>`
-    : `<p>No Islamic event today</p>`;
-});
-
-subscribeBtn.onclick = async () => {
-  if (!subEmail.value) {
-    status.innerText = "Please enter an email";
+  if (!email) {
+    status.textContent = "Please enter an email.";
     return;
   }
 
-  await setDoc(doc(db, "subscriptions", auth.currentUser.uid), {
-    email: subEmail.value,
-    active: true,
-    createdAt: serverTimestamp()
-  });
+  try {
+    const q = query(
+      collection(db, "subscriptions"),
+      where("email", "==", email)
+    );
 
-  status.innerText = "Subscribed successfully";
-};
+    const snap = await getDocs(q);
 
+    if (!snap.empty) {
+      // Reactivate existing subscription
+      snap.forEach(doc => {
+        updateDoc(doc.ref, {
+          active: true,
+          language
+        });
+      });
 
-unsubscribeBtn.onclick = async () => {
-  await deleteDoc(doc(db, "subscriptions", auth.currentUser.uid));
-  status.innerText = "Unsubscribed successfully";
-};
+      status.textContent = "Subscription updated successfully 🌙";
+    } else {
+      // New subscription
+      await addDoc(collection(db, "subscriptions"), {
+        email,
+        active: true,
+        language
+      });
+
+      status.textContent = "Subscribed successfully 🌙";
+    }
+
+    emailInput.value = "";
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Something went wrong. Please try again.";
+  }
+});
+
+document.getElementById("unsubscribeBtn").addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+
+  if (!email) {
+    status.textContent = "Please enter your email.";
+    return;
+  }
+
+  try {
+    const q = query(
+      collection(db, "subscriptions"),
+      where("email", "==", email)
+    );
+
+    const snap = await getDocs(q);
+
+    snap.forEach(doc => {
+      updateDoc(doc.ref, { active: false });
+    });
+
+    status.textContent = "You have been unsubscribed.";
+    emailInput.value = "";
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Something went wrong.";
+  }
+});

@@ -1,25 +1,42 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
-<h2>Dashboard</h2>
+    <h2>Dashboard</h2>
 
-<div id="dates"></div>
-<div id="eventBox"></div>
+    <div id="dates"></div>
+    <div id="eventBox"></div>
 
-<hr>
+    <hr>
 
-<h3>Email Subscription</h3>
-<input type="email" id="subEmail" placeholder="Email for reminders">
-<button id="subscribeBtn">Subscribe</button>
-<button id="unsubscribeBtn">Unsubscribe</button>
+    <h3>Email Subscription</h3>
 
-<p id="status"></p>
+    <input type="email" id="subEmail" placeholder="Email for reminders">
 
-<script type="module" src="js/dashboard.js"></script>
+    <br><br>
+
+    <label for="language">Choose Language:</label>
+    <select id="language">
+        <option value="en">English</option>
+        <option value="ur">Urdu</option>
+        <option value="ar">Arabic</option>
+    </select>
+
+    <br><br>
+
+    <button id="subscribeBtn">Subscribe</button>
+    <button id="unsubscribeBtn">Unsubscribe</button>
+
+    <p id="status"></p>
+
+
+    <script type="module" src="js/dashboard.js"></script>
 </body>
+
 </html>

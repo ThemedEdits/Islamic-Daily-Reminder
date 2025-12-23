@@ -54,24 +54,79 @@ async function getHijriDate() {
     };
 }
 
-// ✉️ Email Sender
-async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl) {
-    const mailOptions = {
-        from: `"Islamic Daily Reminder 🌙" <${process.env.GMAIL_USER}>`,
-        to,
+function getEmailContent(lang, hijri, gregorian, event) {
+    if (lang === "ur") {
+        return {
+            subject: event
+                ? `🌙 ${event} — ${hijri}`
+                : `🌙 اسلامی یومیہ یاددہانی — ${hijri}`,
+
+            body: `
+        <p><strong>ہجری تاریخ:</strong> ${hijri}</p>
+        <p><strong>عیسوی تاریخ:</strong> ${gregorian}</p>
+        <p><strong>آج کی یاددہانی:</strong><br/>
+        ${event || "آج کوئی خاص اسلامی موقع نہیں۔ اللہ آپ کے دن میں برکت عطا فرمائے 🤍"}
+        </p>
+        <p>اللہ آپ کو سلامتی، ہدایت اور برکت عطا فرمائے۔ 🌙</p>
+      `
+        };
+    }
+
+    if (lang === "ar") {
+        return {
+            subject: event
+                ? `🌙 ${event} — ${hijri}`
+                : `🌙 التذكير الإسلامي اليومي — ${hijri}`,
+
+            body: `
+        <p><strong>التاريخ الهجري:</strong> ${hijri}</p>
+        <p><strong>التاريخ الميلادي:</strong> ${gregorian}</p>
+        <p><strong>تذكير اليوم:</strong><br/>
+        ${event || "لا يوجد حدث إسلامي خاص اليوم. بارك الله في يومك 🤍"}
+        </p>
+        <p>نسأل الله أن يمنحك السكينة والهداية والبركة 🌙</p>
+      `
+        };
+    }
+
+    // Default English
+    return {
         subject: event
             ? `🌙 ${event} — ${hijri}`
             : `🌙 Islamic Daily Reminder — ${hijri}`,
 
+        body: `
+      <p><strong>Hijri Date:</strong> ${hijri}</p>
+      <p><strong>Gregorian Date:</strong> ${gregorian}</p>
+      <p><strong>Today's Reminder:</strong><br/>
+      ${event || "No major Islamic event today. May Allah bless your day 🤍"}
+      </p>
+      <p>May Allah grant you peace, guidance, and barakah 🌙</p>
+    `
+    };
+}
+
+
+// ✉️ Email Sender
+async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
+    const content = getEmailContent(lang, hijri, gregorian, event);
+
+    const mailOptions = {
+        from: `"Islamic Daily Reminder 🌙" <${process.env.GMAIL_USER}>`,
+        to,
+        subject: content.subject,
+
         html: `
 <!DOCTYPE html>
-<html>
+<html lang="${lang}" dir="${lang === "ur" || lang === "ar" ? "rtl" : "ltr"}">
 <head>
+  <meta charset="UTF-8" />
   <style>
     body {
       background: #f5f7fa;
       font-family: Arial, sans-serif;
       padding: 20px;
+      direction: ${lang === "ur" || lang === "ar" ? "rtl" : "ltr"};
     }
     .card {
       max-width: 520px;
@@ -80,21 +135,10 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl) {
       border-radius: 10px;
       padding: 25px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      text-align: ${lang === "ur" || lang === "ar" ? "right" : "left"};
     }
     h1 {
       color: #1b5e20;
-      margin-bottom: 10px;
-    }
-    .date {
-      color: #555;
-      margin-bottom: 15px;
-    }
-    .event {
-      background: #e8f5e9;
-      padding: 15px;
-      border-radius: 6px;
-      font-size: 16px;
-      margin-bottom: 20px;
     }
     .footer {
       font-size: 12px;
@@ -112,30 +156,27 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl) {
   <div class="card">
     <h1>🕌 Islamic Daily Reminder</h1>
 
-    <div class="date">
-      <strong>Hijri:</strong> ${hijri}<br/>
-      <strong>Gregorian:</strong> ${gregorian}
-    </div>
-
-    <div class="event">
-      <strong>Today's Reminder:</strong><br/>
-      ${event || "No major Islamic event today. May Allah bless your day 🤍"}
-    </div>
-
-    <p>May Allah grant you peace, guidance, and barakah. 🌙</p>
+    ${content.body}
 
     <div class="footer">
-      You are receiving this email because you subscribed.<br/>
-      <a href="${unsubscribeUrl}">Unsubscribe</a>
+      <hr/>
+      <a href="${unsubscribeUrl}">
+        ${lang === "ur"
+                ? "ان سبسکرائب کریں"
+                : lang === "ar"
+                    ? "إلغاء الاشتراك"
+                    : "Unsubscribe"}
+      </a>
     </div>
   </div>
 </body>
 </html>
-    `,
+    `
     };
 
     await transporter.sendMail(mailOptions);
 }
+
 
 
 // 🔥 MAIN HANDLER
@@ -149,7 +190,7 @@ export default async function handler(req, res) {
 
         let sent = 0;
         for (const doc of snap.docs) {
-            const { email, active } = doc.data();
+            const { email, active, language } = doc.data();
             if (!active) continue;
 
             const unsubscribeUrl =
@@ -160,8 +201,10 @@ export default async function handler(req, res) {
                 hijriData.hijri,
                 hijriData.gregorian,
                 event,
-                unsubscribeUrl
+                unsubscribeUrl,
+                language || "en"
             );
+
 
             sent++;
         }
