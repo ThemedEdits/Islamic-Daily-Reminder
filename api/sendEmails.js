@@ -1,5 +1,10 @@
 import admin from "firebase-admin";
 
+
+console.log("PROJECT_ID:", process.env.FIREBASE_PROJECT_ID);
+console.log("CLIENT_EMAIL:", process.env.FIREBASE_CLIENT_EMAIL);
+console.log("PRIVATE_KEY EXISTS:", !!process.env.FIREBASE_PRIVATE_KEY);
+
 // 🔐 Firebase Admin Init
 if (!admin.apps.length) {
   admin.initializeApp({
