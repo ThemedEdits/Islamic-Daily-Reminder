@@ -3,7 +3,7 @@ import emailjs from "https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/emailjs.min
 emailjs.init("LQkhVpkS4QGiTEisH");
 
 export function sendDailyEmail(to, hijri, gregorian, event) {
-  return emailjs.send("SERVICE_ID", "TEMPLATE_ID", {
+  return emailjs.send("Islamic Daily Reminder W", "template_08xd1gn", {
     to_email: to,
     hijri,
     gregorian,
