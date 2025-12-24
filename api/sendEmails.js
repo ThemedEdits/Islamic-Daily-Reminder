@@ -3,163 +3,164 @@ import nodemailer from "nodemailer";
 
 // 🔐 Firebase Admin Init
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    }),
-  });
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+        }),
+    });
 }
 
 const db = admin.firestore();
 
 // 📧 Nodemailer Transport
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
-  },
-  // Improve email deliverability
-  pool: true,
-  maxConnections: 5,
-  rateDelta: 1000,
-  rateLimit: 5
+    service: "gmail",
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
+    },
+    // Improve email deliverability
+    pool: true,
+    maxConnections: 5,
+    rateDelta: 1000,
+    rateLimit: 5
 });
 
 // 🔹 Islamic Events (Expanded)
 const EVENTS = {
-  "1-1": "Islamic New Year - A time for reflection and renewal",
-  "10-1": "Day of Ashura - Recommended fasting day",
-  "12-3": "Eid Milad-un-Nabi ﷺ - Blessed birth of Prophet Muhammad (PBUH)",
-  "1-9": "Start of Ramadan - Month of fasting and spiritual growth",
-  "27-9": "Laylatul Qadr - The Night of Power, better than 1000 months",
-  "1-10": "Eid-ul-Fitr - Celebration after Ramadan",
-  "10-12": "Eid-ul-Adha - Festival of Sacrifice"
+    "1-1": "Islamic New Year - A time for reflection and renewal",
+    "10-1": "Day of Ashura - Recommended fasting day",
+    "12-3": "Eid Milad-un-Nabi ﷺ - Blessed birth of Prophet Muhammad (PBUH)",
+    "1-9": "Start of Ramadan - Month of fasting and spiritual growth",
+    "27-9": "Laylatul Qadr - The Night of Power, better than 1000 months",
+    "1-10": "Eid-ul-Fitr - Celebration after Ramadan",
+    "10-12": "Eid-ul-Adha - Festival of Sacrifice"
 };
 
 // 🔹 Hijri Date with more details
 async function getHijriDate() {
-  const today = new Date();
-  const d = today.getDate();
-  const m = today.getMonth() + 1;
-  const y = today.getFullYear();
+    const today = new Date();
+    const d = today.getDate();
+    const m = today.getMonth() + 1;
+    const y = today.getFullYear();
 
-  const res = await fetch(
-    `https://api.aladhan.com/v1/gToH?date=${d}-${m}-${y}`
-  );
-  const json = await res.json();
+    const res = await fetch(
+        `https://api.aladhan.com/v1/gToH?date=${d}-${m}-${y}`
+    );
+    const json = await res.json();
 
-  if (!json.data) {
-    throw new Error("Failed to fetch Hijri date");
-  }
+    if (!json.data) {
+        throw new Error("Failed to fetch Hijri date");
+    }
 
-  return {
-    hijri: json.data.hijri.date,
-    hijriDay: json.data.hijri.day,
-    hijriMonth: json.data.hijri.month.number,
-    hijriMonthEn: json.data.hijri.month.en,
-    hijriMonthAr: json.data.hijri.month.ar,
-    gregorian: json.data.gregorian.date,
-    hijriYear: json.data.hijri.year
-  };
+    return {
+        hijri: json.data.hijri.date,
+        hijriDay: json.data.hijri.day,
+        hijriMonth: json.data.hijri.month.number,
+        hijriMonthEn: json.data.hijri.month.en,
+        hijriMonthAr: json.data.hijri.month.ar,
+        gregorian: json.data.gregorian.date,
+        hijriYear: json.data.hijri.year
+    };
 }
 
 // ✉️ Email Sender with Professional Template
 async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
-  const hijriData = await getHijriDate();
+    const hijriData = await getHijriDate();
 
-  // Define logo URL - FIXED: Now it's accessible in the template
-  const logoUrl = "https://islamic-daily-reminder.vercel.app/images/emailicon.jpg";
+    // Define logo URL - FIXED: Now it's accessible in the template
+    const logoUrl = "https://islamic-daily-reminder.vercel.app/images/emailicon.jpg";
 
-  // If logo doesn't exist, use a fallback
-  const fallbackLogo = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%232d6a4f'/><circle cx='65' cy='35' r='20' fill='%2340916c'/></svg>";
+    // If logo doesn't exist, use a fallback
+    const fallbackLogo = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%232d6a4f'/><circle cx='65' cy='35' r='20' fill='%2340916c'/></svg>";
 
-  // Determine font family based on language
-  let fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-  let googleFonts = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap";
+    // Determine font family based on language
+    let fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
+    let googleFonts = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap";
 
-  if (lang === "ar") {
-    fontFamily = "'Noto Sans Arabic', 'Amiri', 'Scheherazade New', serif";
-    googleFonts = "https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600&family=Amiri:wght@400;700&display=swap";
-  } else if (lang === "ur") {
-    fontFamily = "'Noto Nastaliq Urdu', 'Amiri', 'Jameel Noori Nastaleeq', serif";
-    googleFonts = "https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;500&display=swap";
-  }
+    if (lang === "ar") {
+        fontFamily = "'Amiri', 'Scheherazade', 'Adobe Arabic', 'Traditional Arabic', serif";
+        googleFonts = ""; // no external fonts in email
+    } else if (lang === "ur") {
+        fontFamily = "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Arial Unicode MS', serif";
+        googleFonts = ""; // no external fonts in email
+    }
 
-  // Generate subject based on language and event
-  let subject;
-  if (lang === "ur") {
-    subject = event
-      ? `اسلامی موقع: ${event.split(' - ')[0]} — ${hijri}`
-      : `اسلامی یومیہ یاددہانی — ${hijri}`;
-  } else if (lang === "ar") {
-    subject = event
-      ? `مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijri}`
-      : ` التذكير الإسلامي اليومي — ${hijri}`;
-  } else {
-    subject = event
-      ? `Islamic Event: ${event.split(' - ')[0]} — ${hijri}`
-      : `${hijri} — Islamic Daily Reminder`;
-  }
 
-  // Generate email content based on language
-  let emailContent;
-  let emailTitle;
-  let emailSubtitle;
-  let hijriLabel;
-  let gregorianLabel;
-  let reminderTitle;
-  let reminderContent;
-  let quoteContent;
-  let unsubscribeText;
-  let footerText;
-  let requestText;
+    // Generate subject based on language and event
+    let subject;
+    if (lang === "ur") {
+        subject = event ?
+            `اسلامی موقع: ${event.split(' - ')[0]} — ${hijri}` :
+            `اسلامی یومیہ یاددہانی — ${hijri}`;
+    } else if (lang === "ar") {
+        subject = event ?
+            `مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijri}` :
+            ` التذكير الإسلامي اليومي — ${hijri}`;
+    } else {
+        subject = event ?
+            `Islamic Event: ${event.split(' - ')[0]} — ${hijri}` :
+            `${hijri} — Islamic Daily Reminder`;
+    }
 
-  if (lang === "ur") {
-    emailTitle = "اسلامی یومیہ یاددہانی";
-    emailSubtitle = "روزانہ کی روحانی رہنمائی";
-    hijriLabel = "ہجری";
-    gregorianLabel = "ميلادي";
-    reminderTitle = "آج کی یاددہانی";
-    reminderContent = event || "آج کوئی خاص اسلامی موقع نہیں۔ روزانہ کی نیکیاں جاری رکھیں اور ہر کام میں اللہ کو یاد کریں۔ 🤍";
-    quoteContent = "اللہ آپ کو سلامتی، ہدایت اور برکت عطا فرمائے۔ 🌙";
-    unsubscribeText = "ان سبسکرائب کریں";
-    footerText = "اسلامی یومیہ یاددہانی";
-    requestText = "یہ ای میل آپ کی درخواست پر بھیجی گئی ہے۔";
-  } else if (lang === "ar") {
-    emailTitle = "التذكير الإسلامي اليومي";
-    emailSubtitle = "الإرشاد الروحي اليومي";
-    hijriLabel = "هجري";
-    gregorianLabel = "ميلادي";
-    reminderTitle = "تذكير اليوم";
-    reminderContent = event || "لا يوجد حدث إسلامي خاص اليوم. واصل أعمالك الصالحة اليومية واذكر الله في كل ما تفعل. 🤍";
-    quoteContent = "نسأل الله أن يمنحك السكينة والهداية والبركة 🌙";
-    unsubscribeText = "إلغاء الاشتراك";
-    footerText = "التذكير الإسلامي اليومي";
-    requestText = "تم إرسال هذه الرسالة بناءً على طلبك.";
-  } else {
-    emailTitle = "Islamic Daily Reminder";
-    emailSubtitle = "Daily Spiritual Guidance";
-    hijriLabel = "Hijri";
-    gregorianLabel = "Gregorian";
-    reminderTitle = "Today's Reminder";
-    reminderContent = event || "No major Islamic event today. Continue your daily good deeds and remember Allah in all that you do. 🤍";
-    quoteContent = "May Allah grant you peace, guidance, and barakah 🌙";
-    unsubscribeText = "Unsubscribe";
-    footerText = "Islamic Daily Reminder";
-    requestText = "This email was sent at your request.";
-  }
+    // Generate email content based on language
+    let emailContent;
+    let emailTitle;
+    let emailSubtitle;
+    let hijriLabel;
+    let gregorianLabel;
+    let reminderTitle;
+    let reminderContent;
+    let quoteContent;
+    let unsubscribeText;
+    let footerText;
+    let requestText;
 
-  const mailOptions = {
-    from: {
-      name: "Islamic Daily Reminder",
-      address: process.env.GMAIL_USER
-    },
-    to,
-    subject: subject,
-    html: `
+    if (lang === "ur") {
+        emailTitle = "اسلامی یومیہ یاددہانی";
+        emailSubtitle = "روزانہ کی روحانی رہنمائی";
+        hijriLabel = "ہجری";
+        gregorianLabel = "ميلادي";
+        reminderTitle = "آج کی یاددہانی";
+        reminderContent = event || "آج کوئی خاص اسلامی موقع نہیں۔ روزانہ کی نیکیاں جاری رکھیں اور ہر کام میں اللہ کو یاد کریں۔ 🤍";
+        quoteContent = "اللہ آپ کو سلامتی، ہدایت اور برکت عطا فرمائے۔ 🌙";
+        unsubscribeText = "ان سبسکرائب کریں";
+        footerText = "اسلامی یومیہ یاددہانی";
+        requestText = "یہ ای میل آپ کی درخواست پر بھیجی گئی ہے۔";
+    } else if (lang === "ar") {
+        emailTitle = "التذكير الإسلامي اليومي";
+        emailSubtitle = "الإرشاد الروحي اليومي";
+        hijriLabel = "هجري";
+        gregorianLabel = "ميلادي";
+        reminderTitle = "تذكير اليوم";
+        reminderContent = event || "لا يوجد حدث إسلامي خاص اليوم. واصل أعمالك الصالحة اليومية واذكر الله في كل ما تفعل. 🤍";
+        quoteContent = "نسأل الله أن يمنحك السكينة والهداية والبركة 🌙";
+        unsubscribeText = "إلغاء الاشتراك";
+        footerText = "التذكير الإسلامي اليومي";
+        requestText = "تم إرسال هذه الرسالة بناءً على طلبك.";
+    } else {
+        emailTitle = "Islamic Daily Reminder";
+        emailSubtitle = "Daily Spiritual Guidance";
+        hijriLabel = "Hijri";
+        gregorianLabel = "Gregorian";
+        reminderTitle = "Today's Reminder";
+        reminderContent = event || "No major Islamic event today. Continue your daily good deeds and remember Allah in all that you do. 🤍";
+        quoteContent = "May Allah grant you peace, guidance, and barakah 🌙";
+        unsubscribeText = "Unsubscribe";
+        footerText = "Islamic Daily Reminder";
+        requestText = "This email was sent at your request.";
+    }
+
+    const mailOptions = {
+        from: {
+            name: "Islamic Daily Reminder",
+            address: process.env.GMAIL_USER
+        },
+        to,
+        subject: subject,
+        html: `
 <!DOCTYPE html>
 <html lang="${lang}" dir="${lang === "ur" || lang === "ar" ? "rtl" : "ltr"}">
 <head>
@@ -444,191 +445,191 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
 </html>
         `,
 
-    // Add text version for email clients that don't support HTML
-    text: `${emailTitle}\n\n` +
-      `${hijriLabel}: ${hijri}\n` +
-      `${gregorianLabel}: ${gregorian}\n\n` +
-      `${reminderTitle}:\n` +
-      `${event || (lang === "ur" ? "آج کوئی خاص اسلامی موقع نہیں۔ اللہ آپ کے دن میں برکت عطا فرمائے۔" :
+        // Add text version for email clients that don't support HTML
+        text: `${emailTitle}\n\n` +
+            `${hijriLabel}: ${hijri}\n` +
+            `${gregorianLabel}: ${gregorian}\n\n` +
+            `${reminderTitle}:\n` +
+            `${event || (lang === "ur" ? "آج کوئی خاص اسلامی موقع نہیں۔ اللہ آپ کے دن میں برکت عطا فرمائے۔" :
         lang === "ar" ? "لا يوجد حدث إسلامي خاص اليوم. بارك الله في يومك." :
           "No major Islamic event today. May Allah bless your day.")}\n\n` +
-      `${unsubscribeText}: ${unsubscribeUrl}`,
+            `${unsubscribeText}: ${unsubscribeUrl}`,
 
-    // Email headers for better deliverability
-    headers: {
-      'X-Mailer': 'Islamic Daily Reminder',
-      'X-Priority': '3',
-      'X-MSMail-Priority': 'Normal',
-      'List-Unsubscribe': `<${unsubscribeUrl}>`,
-      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-      'Precedence': 'bulk',
-      'Importance': 'Normal'
-    }
-  };
+        // Email headers for better deliverability
+        headers: {
+            'X-Mailer': 'Islamic Daily Reminder',
+            'X-Priority': '3',
+            'X-MSMail-Priority': 'Normal',
+            'List-Unsubscribe': `<${unsubscribeUrl}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+            'Precedence': 'bulk',
+            'Importance': 'Normal'
+        }
+    };
 
-  try {
-    console.log(`📧 Attempting to send email to: ${to}`);
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent successfully to: ${to}`);
-    console.log(`📨 Message ID: ${info.messageId}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Failed to send email to ${to}:`, error.message);
-    console.error(`📧 Email details:`, { to, subject, lang });
-
-    // Check if it's a logo URL issue
-    if (error.message.includes('logoUrl') || error.message.includes('undefined')) {
-      console.log('⚠️  Logo URL issue detected, trying with fallback...');
-      // Try with fallback logo in a simplified version
-      mailOptions.html = mailOptions.html.replace(logoUrl, fallbackLogo);
-      try {
-        const retryInfo = await transporter.sendMail(mailOptions);
-        console.log(`✅ Email sent with fallback logo to: ${to}`);
+    try {
+        console.log(`📧 Attempting to send email to: ${to}`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Email sent successfully to: ${to}`);
+        console.log(`📨 Message ID: ${info.messageId}`);
         return true;
-      } catch (retryError) {
-        console.error(`❌ Retry also failed for ${to}:`, retryError.message);
-        throw retryError;
-      }
+    } catch (error) {
+        console.error(`❌ Failed to send email to ${to}:`, error.message);
+        console.error(`📧 Email details:`, { to, subject, lang });
+
+        // Check if it's a logo URL issue
+        if (error.message.includes('logoUrl') || error.message.includes('undefined')) {
+            console.log('⚠️  Logo URL issue detected, trying with fallback...');
+            // Try with fallback logo in a simplified version
+            mailOptions.html = mailOptions.html.replace(logoUrl, fallbackLogo);
+            try {
+                const retryInfo = await transporter.sendMail(mailOptions);
+                console.log(`✅ Email sent with fallback logo to: ${to}`);
+                return true;
+            } catch (retryError) {
+                console.error(`❌ Retry also failed for ${to}:`, retryError.message);
+                throw retryError;
+            }
+        }
+        throw error;
     }
-    throw error;
-  }
 }
 
 // 🔥 MAIN HANDLER with detailed logging
 export default async function handler(req, res) {
-  console.log("🚀 /api/sendEmails endpoint called");
-  console.log("📅 Current time:", new Date().toISOString());
-  console.log("🔍 Environment check:", {
-    hasFirebaseConfig: !!process.env.FIREBASE_PROJECT_ID,
-    hasGmailUser: !!process.env.GMAIL_USER,
-    hasGmailPass: !!process.env.GMAIL_PASS ? "Yes (hidden)" : "No"
-  });
-
-  try {
-    // Get today's date
-    console.log("📅 Fetching Hijri date...");
-    const hijriData = await getHijriDate();
-    const eventKey = `${hijriData.hijriDay}-${hijriData.hijriMonth}`;
-    const event = EVENTS[eventKey] || null;
-
-    console.log("📊 Date info:", {
-      hijri: hijriData.hijri,
-      gregorian: hijriData.gregorian,
-      eventKey,
-      eventFound: !!event
+    console.log("🚀 /api/sendEmails endpoint called");
+    console.log("📅 Current time:", new Date().toISOString());
+    console.log("🔍 Environment check:", {
+        hasFirebaseConfig: !!process.env.FIREBASE_PROJECT_ID,
+        hasGmailUser: !!process.env.GMAIL_USER,
+        hasGmailPass: !!process.env.GMAIL_PASS ? "Yes (hidden)" : "No"
     });
 
-    // Get all active subscriptions
-    console.log("🔍 Querying Firestore for active subscriptions...");
-    const snap = await db.collection("subscriptions")
-      .where("active", "==", true)
-      .get();
+    try {
+        // Get today's date
+        console.log("📅 Fetching Hijri date...");
+        const hijriData = await getHijriDate();
+        const eventKey = `${hijriData.hijriDay}-${hijriData.hijriMonth}`;
+        const event = EVENTS[eventKey] || null;
 
-    console.log(`📋 Found ${snap.size} active subscriptions`);
-
-    if (snap.size === 0) {
-      console.log("⚠️  No active subscriptions found");
-      return res.status(200).json({
-        success: true,
-        message: "No active subscriptions found",
-        total: 0,
-        sent: 0,
-        failed: 0
-      });
-    }
-
-    // Log all subscribers
-    snap.forEach((doc, index) => {
-      const data = doc.data();
-      console.log(`   ${index + 1}. ${data.email} (${data.language || 'en'})`);
-    });
-
-    const results = {
-      success: 0,
-      failed: 0,
-      errors: []
-    };
-
-    console.log("📧 Starting to send emails...");
-
-    // Send emails sequentially to avoid rate limits
-    for (const doc of snap.docs) {
-      const { email, active, language = "en" } = doc.data();
-
-      console.log(`\n📨 Processing: ${email} (${language})`);
-
-      if (!active) {
-        console.log(`   ⏭️  Skipping - not active`);
-        results.failed++;
-        continue;
-      }
-
-      try {
-        const unsubscribeUrl = `https://islamic-daily-reminder.vercel.app/api/unsubscribe?email=${encodeURIComponent(email)}`;
-        console.log(`   🔗 Unsubscribe URL: ${unsubscribeUrl}`);
-
-        await sendEmail(
-          email,
-          hijriData.hijri,
-          hijriData.gregorian,
-          event,
-          unsubscribeUrl,
-          language
-        );
-
-        results.success++;
-        console.log(`   ✅ Sent successfully`);
-
-        // Add small delay between emails to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-      } catch (error) {
-        results.failed++;
-        results.errors.push({
-          email,
-          error: error.message,
-          timestamp: new Date().toISOString()
+        console.log("📊 Date info:", {
+            hijri: hijriData.hijri,
+            gregorian: hijriData.gregorian,
+            eventKey,
+            eventFound: !!event
         });
-        console.error(`   ❌ Failed: ${error.message}`);
 
-        // Continue with next email even if one fails
-        continue;
-      }
+        // Get all active subscriptions
+        console.log("🔍 Querying Firestore for active subscriptions...");
+        const snap = await db.collection("subscriptions")
+            .where("active", "==", true)
+            .get();
+
+        console.log(`📋 Found ${snap.size} active subscriptions`);
+
+        if (snap.size === 0) {
+            console.log("⚠️  No active subscriptions found");
+            return res.status(200).json({
+                success: true,
+                message: "No active subscriptions found",
+                total: 0,
+                sent: 0,
+                failed: 0
+            });
+        }
+
+        // Log all subscribers
+        snap.forEach((doc, index) => {
+            const data = doc.data();
+            console.log(`   ${index + 1}. ${data.email} (${data.language || 'en'})`);
+        });
+
+        const results = {
+            success: 0,
+            failed: 0,
+            errors: []
+        };
+
+        console.log("📧 Starting to send emails...");
+
+        // Send emails sequentially to avoid rate limits
+        for (const doc of snap.docs) {
+            const { email, active, language = "en" } = doc.data();
+
+            console.log(`\n📨 Processing: ${email} (${language})`);
+
+            if (!active) {
+                console.log(`   ⏭️  Skipping - not active`);
+                results.failed++;
+                continue;
+            }
+
+            try {
+                const unsubscribeUrl = `https://islamic-daily-reminder.vercel.app/api/unsubscribe?email=${encodeURIComponent(email)}`;
+                console.log(`   🔗 Unsubscribe URL: ${unsubscribeUrl}`);
+
+                await sendEmail(
+                    email,
+                    hijriData.hijri,
+                    hijriData.gregorian,
+                    event,
+                    unsubscribeUrl,
+                    language
+                );
+
+                results.success++;
+                console.log(`   ✅ Sent successfully`);
+
+                // Add small delay between emails to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+            } catch (error) {
+                results.failed++;
+                results.errors.push({
+                    email,
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                });
+                console.error(`   ❌ Failed: ${error.message}`);
+
+                // Continue with next email even if one fails
+                continue;
+            }
+        }
+
+        console.log(`\n📊 Email sending completed:`);
+        console.log(`   ✅ Successfully sent: ${results.success}`);
+        console.log(`   ❌ Failed: ${results.failed}`);
+        console.log(`   📧 Total attempted: ${snap.size}`);
+
+        // Return response
+        res.status(200).json({
+            success: true,
+            total: snap.size,
+            sent: results.success,
+            failed: results.failed,
+            errors: results.errors.length > 0 ? results.errors : undefined,
+            summary: {
+                hijriDate: hijriData.hijri,
+                gregorianDate: hijriData.gregorian,
+                eventFound: !!event,
+                timestamp: new Date().toISOString(),
+                processingTime: `${Date.now() - req.startTime || 'unknown'}ms`
+            }
+        });
+
+    } catch (err) {
+        console.error("❌ CRITICAL ERROR in handler:", err);
+        console.error("Stack trace:", err.stack);
+
+        res.status(500).json({
+            success: false,
+            error: err.message,
+            timestamp: new Date().toISOString(),
+            details: process.env.NODE_ENV === 'development' ? {
+                stack: err.stack,
+                name: err.name
+            } : undefined
+        });
     }
-
-    console.log(`\n📊 Email sending completed:`);
-    console.log(`   ✅ Successfully sent: ${results.success}`);
-    console.log(`   ❌ Failed: ${results.failed}`);
-    console.log(`   📧 Total attempted: ${snap.size}`);
-
-    // Return response
-    res.status(200).json({
-      success: true,
-      total: snap.size,
-      sent: results.success,
-      failed: results.failed,
-      errors: results.errors.length > 0 ? results.errors : undefined,
-      summary: {
-        hijriDate: hijriData.hijri,
-        gregorianDate: hijriData.gregorian,
-        eventFound: !!event,
-        timestamp: new Date().toISOString(),
-        processingTime: `${Date.now() - req.startTime || 'unknown'}ms`
-      }
-    });
-
-  } catch (err) {
-    console.error("❌ CRITICAL ERROR in handler:", err);
-    console.error("Stack trace:", err.stack);
-
-    res.status(500).json({
-      success: false,
-      error: err.message,
-      timestamp: new Date().toISOString(),
-      details: process.env.NODE_ENV === 'development' ? {
-        stack: err.stack,
-        name: err.name
-      } : undefined
-    });
-  }
 }
