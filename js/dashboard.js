@@ -1,12 +1,12 @@
 import { db, auth } from "./firebase.js";
 import { getHijriToday } from "./hijri.js";
 import {
-  collection,
-  addDoc,
-  query,
-  where,
-  getDocs,
-  updateDoc
+    collection,
+    addDoc,
+    query,
+    where,
+    getDocs,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -28,18 +28,18 @@ const EVENTS = {
 // Add this mapping to your dashboard.js
 const hijriMonths = {
     en: [
-        "", "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani", 
-        "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban", 
+        "", "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani",
+        "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban",
         "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
     ],
     ur: [
-        "", "محرم", "صفر", "ربيع الأول", "ربيع الآخر", 
-        "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", 
+        "", "محرم", "صفر", "ربيع الأول", "ربيع الآخر",
+        "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان",
         "رمضان", "شوال", "ذو القعدة", "ذو الحجة"
     ],
     ar: [
-        "", "مُحَرَّم", "صَفَر", "رَبِيع ٱلْأَوَّل", "رَبِيع ٱلْآخِر", 
-        "جُمَادَىٰ ٱلْأُولَىٰ", "جُمَادَىٰ ٱلْآخِرَة", "رَجَب", "شَعْبَان", 
+        "", "مُحَرَّم", "صَفَر", "رَبِيع ٱلْأَوَّل", "رَبِيع ٱلْآخِر",
+        "جُمَادَىٰ ٱلْأُولَىٰ", "جُمَادَىٰ ٱلْآخِرَة", "رَجَب", "شَعْبَان",
         "رَمَضَان", "شَوَّال", "ذُو ٱلْقَعْدَة", "ذُو ٱلْحِجَّة"
     ]
 };
@@ -48,23 +48,23 @@ const hijriMonths = {
 async function loadDashboardData() {
     const datesDiv = document.getElementById("dates");
     const eventBox = document.getElementById("eventBox");
-    
+
     try {
         const today = await getHijriToday();
         const eventKey = `${today.hijriDay}-${today.hijriMonth}`;
         const event = EVENTS[eventKey];
-        
+
         // Get current language for month name display
         const userLang = languageSelect.value || 'en';
-        
+
         // Display dates with month names
         datesDiv.innerHTML = `
             <div class="date-item">
                 <span class="date-label">Hijri Date</span>
                 <span class="date-value">${today.hijri}</span>
             </div>
-            <div class="date-label date-item">
-            <span class="date-label">Gregorian Date</span>
+            <div class="date-label date-item"><span class="date-label">
+            Gregorian Date</span>
                 <span class="date-value">${today.gregorian}</span>
             </div>
             <div class="date-item">
@@ -78,7 +78,7 @@ async function loadDashboardData() {
                 <span class="date-value">${today.hijriWeekday}</span>
             </div>
         `;
-        
+
         // Display event
         eventBox.innerHTML = event ? `
             <div class="event-highlight">
@@ -95,7 +95,7 @@ async function loadDashboardData() {
                 <small>"Verily, in the remembrance of Allah do hearts find rest." (Quran 13:28)</small>
             </div>
         `;
-        
+
     } catch (error) {
         console.error("Error loading dashboard data:", error);
         datesDiv.innerHTML = `<p class="error">Error loading dates. Please refresh.</p>`;
@@ -115,7 +115,7 @@ function getMonthName(today, lang) {
 }
 
 // Subscription functionality
-document.getElementById("subscribeBtn").addEventListener("click", async () => {
+document.getElementById("subscribeBtn").addEventListener("click", async() => {
     const email = emailInput.value.trim();
     const language = languageSelect.value;
 
@@ -152,7 +152,7 @@ document.getElementById("subscribeBtn").addEventListener("click", async () => {
                 });
             });
 
-            showStatus("Subscription reactivated successfully! 🌙 You'll start receiving reminders tomorrow.", "success");
+            showStatus("Subscription reactivated successfully! You'll start receiving reminders tomorrow.", "success");
         } else {
             // New subscription
             await addDoc(collection(db, "subscriptions"), {
@@ -163,18 +163,18 @@ document.getElementById("subscribeBtn").addEventListener("click", async () => {
                 updatedAt: new Date().toISOString()
             });
 
-            showStatus("Subscribed successfully! 🌙 You'll receive your first reminder tomorrow morning.", "success");
+            showStatus("Subscribed successfully! You'll receive your first reminder tomorrow morning.", "success");
         }
 
         emailInput.value = "";
-        
+
         // Animate success
         btn.innerHTML = '<i class="fas fa-check"></i> Subscribed!';
         setTimeout(() => {
             btn.innerHTML = originalText;
             btn.classList.remove('loading');
         }, 2000);
-        
+
     } catch (err) {
         console.error(err);
         showStatus("Something went wrong. Please try again.", "error");
@@ -183,7 +183,7 @@ document.getElementById("subscribeBtn").addEventListener("click", async () => {
     }
 });
 
-document.getElementById("unsubscribeBtn").addEventListener("click", async () => {
+document.getElementById("unsubscribeBtn").addEventListener("click", async() => {
     const email = emailInput.value.trim();
 
     if (!email) {
@@ -217,7 +217,7 @@ document.getElementById("unsubscribeBtn").addEventListener("click", async () => 
         }
 
         snap.forEach(async doc => {
-            await updateDoc(doc.ref, { 
+            await updateDoc(doc.ref, {
                 active: false,
                 unsubscribedAt: new Date().toISOString()
             });
@@ -225,14 +225,14 @@ document.getElementById("unsubscribeBtn").addEventListener("click", async () => 
 
         showStatus("You have been unsubscribed. We'll miss you! May Allah keep you guided.", "success");
         emailInput.value = "";
-        
+
         // Animate success
         btn.innerHTML = '<i class="fas fa-check"></i> Unsubscribed!';
         setTimeout(() => {
             btn.innerHTML = originalText;
             btn.classList.remove('loading');
         }, 2000);
-        
+
     } catch (err) {
         console.error(err);
         showStatus("Something went wrong. Please try again.", "error");
@@ -242,7 +242,7 @@ document.getElementById("unsubscribeBtn").addEventListener("click", async () => 
 });
 
 // Logout functionality
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+document.getElementById("logoutBtn").addEventListener("click", async() => {
     try {
         await signOut(auth);
         window.location.href = "index.html";
@@ -255,7 +255,7 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
 function showStatus(message, type) {
     status.textContent = message;
     status.className = `status-message ${type}`;
-    
+
     // Auto-hide success messages after 5 seconds
     if (type === 'success') {
         setTimeout(() => {
@@ -273,11 +273,43 @@ function validateEmail(email) {
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
     loadDashboardData();
-    
+
     // Check if user is logged in
     auth.onAuthStateChanged(user => {
         if (!user && window.location.pathname.includes('dashboard.html')) {
             window.location.href = 'index.html';
         }
     });
+});
+
+
+
+const select = document.querySelector(".custom-select");
+const display = select.querySelector(".select-display");
+const valueSpan = select.querySelector(".select-value");
+const options = select.querySelectorAll(".select-options li");
+const hiddenInput = document.getElementById("language");
+
+// Toggle curtain
+display.addEventListener("click", () => {
+    select.classList.toggle("open");
+});
+
+// Select option
+options.forEach(option => {
+    option.addEventListener("click", () => {
+        const value = option.dataset.value;
+        valueSpan.textContent = option.textContent;
+        hiddenInput.value = value;
+
+        select.classList.add("active");
+        select.classList.remove("open");
+    });
+});
+
+// Close on outside click
+document.addEventListener("click", e => {
+    if (!select.contains(e.target)) {
+        select.classList.remove("open");
+    }
 });

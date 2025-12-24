@@ -5,11 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Islamic Daily Reminder - Connect with your faith daily</title>
-    <meta name="description"
-        content="Get daily Islamic reminders, Hijri dates, and important Islamic events delivered to your email. Stay connected with your faith every day.">
+    <meta name="description" content="Get daily Islamic reminders, Hijri dates, and important Islamic events delivered to your email. Stay connected with your faith every day.">
     <meta property="og:title" content="Islamic Daily Reminder">
-    <meta property="og:description"
-        content="Daily Islamic reminders, Hijri dates, and important events delivered to your inbox.">
+    <meta property="og:description" content="Daily Islamic reminders, Hijri dates, and important events delivered to your inbox.">
     <meta property="og:image" content="https://islamic-daily-reminder.vercel.app/images/tabicon.png">
     <meta property="og:url" content="https://islamic-daily-reminder.vercel.app">
     <meta property="og:type" content="website">
@@ -27,8 +25,8 @@
 <body>
     <div class="theme-toggle">
         <button id="themeToggle" aria-label="Toggle theme">
-            <i class="fas fa-moon"></i>
-        </button>
+      <i class="fas fa-moon"></i>
+    </button>
     </div>
 
     <div class="container">
@@ -39,27 +37,35 @@
             </div>
             <p class="subtitle">Stay connected with your faith every day</p>
 
-            <div class="form-group">
+            <div class="form-group floating-group">
                 <div class="input-with-icon">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" placeholder="Your email address" autocomplete="email">
+                    <input type="email" id="email" required placeholder=" " autocomplete="email">
+                    <label for="email" class="floating-label">
+            Email Address
+          </label>
                 </div>
             </div>
 
-            <div class="form-group">
+
+            <div class="form-group floating-group">
                 <div class="input-with-icon">
                     <i class="fas fa-lock"></i>
-                    <input type="password" id="password" placeholder="Create a password" autocomplete="new-password">
+                    <input type="password" id="password" required placeholder=" " autocomplete="new-password">
+                    <label for="password" class="floating-label">
+            Create a Password
+          </label>
                 </div>
             </div>
+
 
             <div class="button-group">
                 <button id="signupBtn" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i> Create Account
-                </button>
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
                 <button id="loginBtn" class="btn btn-secondary">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
-                </button>
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
             </div>
 
             <div class="features">
@@ -80,8 +86,7 @@
             <p id="msg" class="message"></p>
 
             <p class="disclaimer">
-                <i class="fas fa-info-circle"></i>
-                Your spiritual journey begins here. May Allah bless you.
+                <i class="fas fa-info-circle"></i> Your spiritual journey begins here. May Allah bless you.
             </p>
         </div>
 

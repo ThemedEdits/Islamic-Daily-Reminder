@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Islamic Daily Reminder</title>
-    <meta name="description"
-        content="Manage your Islamic daily reminders, view important dates, and customize your preferences.">
+    <meta name="description" content="Manage your Islamic daily reminders, view important dates, and customize your preferences.">
     <meta property="og:title" content="Dashboard - Islamic Daily Reminder">
     <meta property="og:description" content="Manage your Islamic daily reminders and preferences">
     <meta property="og:image" content="https://islamic-daily-reminder.vercel.app/images/tabicon.png">
@@ -67,30 +66,43 @@
                         <h2> Email Subscription</h2>
                         <i class="fas fa-bell"></i>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="subEmail" class="input-label">
-                            <i class="fas fa-at"></i> Email Address
-                        </label>
+
+                    <div class="form-group floating-group">
                         <div class="input-with-icon">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" id="subEmail" placeholder="Enter your email for reminders">
+                            <input type="email" id="subEmail" required placeholder=" ">
+                            <label for="subEmail" class="floating-label">
+                                Email Address
+                            </label>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="language" class="input-label">
-                            <i class="fas fa-language"></i> Preferred Language
-                        </label>
-                        <div class="select-with-icon">
+
+                    <div class="form-group floating-group">
+                        <div class="custom-select">
                             <i class="fas fa-globe"></i>
-                            <select id="language">
-                                <option value="en">English</option>
-                                <option value="ur">Urdu</option>
-                                <option value="ar">Arabic</option>
-                            </select>
+
+                            <!-- Display -->
+                            <div class="select-display" tabindex="0" id="languageSelect">
+                                <span class="select-value"> </span>
+                            </div>
+
+                            <!-- Floating Label -->
+                            <label class="floating-label">Preferred Language</label>
+
+                            <!-- Curtain Menu -->
+                            <ul class="select-options">
+                                <li data-value="en">English</li>
+                                <li data-value="ur">Urdu</li>
+                                <li data-value="ar">Arabic</li>
+                            </ul>
+
+                            <!-- Hidden input for Firebase -->
+                            <input type="hidden" id="language" required>
                         </div>
                     </div>
+
+
 
                     <div class="button-group">
                         <button id="subscribeBtn" class="btn btn-success">

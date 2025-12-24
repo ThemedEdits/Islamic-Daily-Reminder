@@ -66,8 +66,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at 20% 80%, rgba(45, 106, 79, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(64, 145, 108, 0.05) 0%, transparent 50%);
+    background: radial-gradient(circle at 20% 80%, rgba(45, 106, 79, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(64, 145, 108, 0.05) 0%, transparent 50%);
     z-index: -1;
     pointer-events: none;
 }
@@ -78,7 +77,9 @@ body::before {
     padding: 20px;
 }
 
+
 /* Theme Toggle */
+
 .theme-toggle {
     position: fixed;
     top: 20px;
@@ -107,7 +108,9 @@ body::before {
     box-shadow: var(--shadow-hover);
 }
 
+
 /* Cards */
+
 .card {
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -135,7 +138,9 @@ body::before {
     margin: 30px 0;
 }
 
+
 /* Logo & Typography */
+
 .logo {
     display: flex;
     flex-direction: column;
@@ -150,6 +155,7 @@ body::before {
     color: var(--primary-color);
     /* animation: float 3s ease-in-out infinite; */
 }
+
 
 /* 
 @keyframes float {
@@ -172,7 +178,29 @@ h1 {
     font-size: 1.1rem;
 }
 
+
 /* Forms */
+
+
+/* 🔧 Fix Chrome / Edge autofill white background */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset;
+    box-shadow: 0 0 0 1000px var(--card-bg) inset;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+.input-with-icon input,
+.select-with-icon select {
+    caret-color: var(--text-primary);
+}
+
 .form-group {
     margin-bottom: 25px;
 }
@@ -235,7 +263,150 @@ h1 {
     margin-right: 8px;
 }
 
+.input-label {
+    pointer-events: none;
+}
+
+.floating-group {
+    position: relative;
+}
+
+.floating-label {
+    position: absolute;
+    left: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    pointer-events: none;
+    transition: 0.4s ease-in-out;
+    background: var(--card-bg);
+    padding: 0 6px;
+}
+
+.input-with-icon input:focus+.floating-label,
+.input-with-icon input:not(:placeholder-shown)+.floating-label,
+.select-with-icon select:focus+.floating-label,
+.select-with-icon select:valid+.floating-label {
+    top: -5px;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+}
+
+.input-with-icon input,
+.select-with-icon select {
+    padding-top: 22px;
+}
+
+.input-with-icon input:focus~i,
+.select-with-icon select:focus~i {
+    color: var(--primary-color);
+}
+
+
+/* ===== Custom Select ===== */
+
+.custom-select {
+    position: relative;
+}
+
+.select-display {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.select-display:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+
+/* Floating Label */
+
+.custom-select .floating-label {
+    position: absolute;
+    left: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    pointer-events: none;
+    transition: var(--transition);
+    background: var(--card-bg);
+    padding: 0 6px;
+}
+
+
+/* Active label */
+
+.custom-select.active .floating-label {
+    top: -5px;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+}
+
+
+/* Curtain menu */
+
+.select-options {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.35s ease;
+    z-index: 10;
+}
+
+
+/* Open state */
+
+.custom-select.open .select-options {
+    max-height: 220px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* Options */
+
+.select-options li {
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.select-options li:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* Icon fix */
+
+.custom-select i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+
 /* Buttons */
+
 .button-group {
     display: flex;
     gap: 15px;
@@ -306,7 +477,9 @@ h1 {
     color: white;
 }
 
+
 /* Dashboard Header */
+
 .dashboard-header {
     display: flex;
     justify-content: space-between;
@@ -325,15 +498,18 @@ h1 {
     margin-top: 5px;
 }
 
+
 /* Date Display */
-.date-card .card-header, .card-header {
+
+.date-card .card-header,
+.card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
 }
 
-.card-header i{
+.card-header i {
     font-size: 1.8rem;
     color: var(--primary-color);
 }
@@ -373,18 +549,18 @@ h1 {
     font-family: 'Amiri', serif;
 }
 
+
 /* Event Card */
+
 .event-card {
     animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-
     0%,
     100% {
         opacity: 1;
     }
-
     50% {
         opacity: 0.9;
     }
@@ -400,7 +576,9 @@ h1 {
     border: 1px solid rgba(255, 158, 0, 0.2);
 }
 
+
 /* Features */
+
 .features {
     display: flex;
     justify-content: space-around;
@@ -457,7 +635,9 @@ h1 {
     font-size: 0.9rem;
 }
 
+
 /* Preview Card */
+
 .preview-card {
     max-width: 480px;
     margin: 40px auto;
@@ -491,7 +671,9 @@ h1 {
     flex-shrink: 0;
 }
 
+
 /* Messages */
+
 .message,
 .status-message {
     padding: 15px;
@@ -505,7 +687,6 @@ h1 {
         opacity: 0;
         transform: translateY(-10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -524,7 +705,9 @@ h1 {
     border: 1px solid rgba(211, 47, 47, 0.2);
 }
 
+
 /* Subscription Info */
+
 .subscription-info {
     margin-top: 25px;
     padding: 20px;
@@ -540,7 +723,9 @@ h1 {
     gap: 10px;
 }
 
+
 /* Footer */
+
 footer {
     text-align: center;
     margin-top: 40px;
@@ -584,13 +769,14 @@ footer {
     color: var(--primary-color);
 }
 
+
 /* Animations */
+
 @keyframes slideUp {
     from {
         opacity: 0;
         transform: translateY(30px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -601,47 +787,39 @@ footer {
     animation: pulse 2s infinite;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
 
+/* Responsive Design */
+
+@media (max-width: 768px) {
     .event-preview {
         flex-direction: column;
     }
-
     #previewEvent {
         text-align: center;
     }
-
     .container {
         padding: 10px;
     }
-
     .button-group {
         flex-direction: column;
     }
-
     .btn {
         width: 100%;
     }
-
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
-
     .features {
         flex-direction: column;
         align-items: center;
     }
-
     h1 {
         font-size: 1.8rem;
     }
-
     .theme-toggle {
         top: 10px;
         right: 10px;
     }
-
     .theme-toggle button {
         width: 40px;
         height: 40px;
@@ -653,18 +831,18 @@ footer {
     .card {
         padding: 20px;
     }
-
     .date-value {
         font-size: 1.2rem;
     }
-
     .btn {
         padding: 14px 20px;
         font-size: 0.9rem;
     }
 }
 
+
 /* Loading States */
+
 .loading {
     opacity: 0.6;
     pointer-events: none;
@@ -688,7 +866,9 @@ footer {
     }
 }
 
+
 /* Arabic & Urdu Support */
+
 [dir="rtl"] {
     text-align: right;
 }
