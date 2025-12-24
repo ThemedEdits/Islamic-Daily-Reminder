@@ -1,21 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Islamic Reminder</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic Daily Reminder - Connect with your faith daily</title>
+    <meta name="description"
+        content="Get daily Islamic reminders, Hijri dates, and important Islamic events delivered to your email. Stay connected with your faith every day.">
+    <meta property="og:title" content="Islamic Daily Reminder">
+    <meta property="og:description"
+        content="Daily Islamic reminders, Hijri dates, and important events delivered to your inbox.">
+    <meta property="og:image" content="https://islamic-daily-reminder.vercel.app/images/og-image.png">
+    <meta property="og:url" content="https://islamic-daily-reminder.vercel.app">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Islamic Daily Reminder">
+    <meta name="twitter:description" content="Daily Islamic reminders delivered to your inbox">
+    <meta name="twitter:image" content="https://islamic-daily-reminder.vercel.app/images/og-image.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
+    <div class="theme-toggle">
+        <button id="themeToggle" aria-label="Toggle theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
 
-<h2>Islamic Daily Reminder</h2>
+    <div class="container">
+        <div class="card auth-card">
+            <div class="logo">
+                <i class="fas fa-moon"></i>
+                <h1>Islamic Daily Reminder</h1>
+            </div>
+            <p class="subtitle">Stay connected with your faith every day</p>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
+            <div class="form-group">
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Your email address" autocomplete="email">
+                </div>
+            </div>
 
-<button id="signupBtn">Sign Up</button>
-<button id="loginBtn">Login</button>
+            <div class="form-group">
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Create a password" autocomplete="new-password">
+                </div>
+            </div>
 
-<p id="msg"></p>
+            <div class="button-group">
+                <button id="signupBtn" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <button id="loginBtn" class="btn btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </div>
 
-<script type="module" src="js/auth.js"></script>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Daily Hijri Dates</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bell"></i>
+                    <span>Event Reminders</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-language"></i>
+                    <span>Multi-language</span>
+                </div>
+            </div>
+
+            <p id="msg" class="message"></p>
+
+            <p class="disclaimer">
+                <i class="fas fa-info-circle"></i>
+                Your spiritual journey begins here. May Allah bless you.
+            </p>
+        </div>
+
+        <div class="preview-card">
+            <div class="preview-header">
+                <h3><i class="fas fa-star"></i> Today's Preview</h3>
+            </div>
+            <div class="date-display">
+                <div class="date-item">
+                    <span class="date-label">Hijri</span>
+                    <span class="date-value" id="previewHijri">Loading...</span>
+                </div>
+                <div class="date-item">
+                    <span class="date-label">Gregorian</span>
+                    <span class="date-value" id="previewGregorian">Loading...</span>
+                </div>
+            </div>
+            <div class="event-preview">
+                <i class="fas fa-mosque"></i>
+                <p id="previewEvent">Loading today's Islamic events...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Islamic Daily Reminder. May peace and blessings be upon you. <i class="fas fa-heart"></i></p>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/preview.js"></script>
+    <script type="module" src="js/theme.js"></script>
 </body>
+
 </html>

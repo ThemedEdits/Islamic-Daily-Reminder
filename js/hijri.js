@@ -18,6 +18,10 @@ export async function getHijriToday() {
     hijri: json.data.hijri.date,
     hijriDay: json.data.hijri.day,
     hijriMonth: json.data.hijri.month.number,
-    gregorian: json.data.gregorian.date
+    hijriMonthEn: json.data.hijri.month.en,  // English month name
+    hijriMonthAr: json.data.hijri.month.ar,  // Arabic month name
+    gregorian: json.data.gregorian.date,
+    gregorianWeekday: json.data.gregorian.weekday.en,
+    hijriWeekday: json.data.hijri.weekday.en
   };
 }

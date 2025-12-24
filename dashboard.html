@@ -1,42 +1,152 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Islamic Daily Reminder</title>
+    <meta name="description"
+        content="Manage your Islamic daily reminders, view important dates, and customize your preferences.">
+    <meta property="og:title" content="Dashboard - Islamic Daily Reminder">
+    <meta property="og:description" content="Manage your Islamic daily reminders and preferences">
+    <meta property="og:image" content="https://islamic-daily-reminder.vercel.app/images/og-dashboard.png">
+    <meta property="og:url" content="https://islamic-daily-reminder.vercel.app/dashboard.html">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <div class="theme-toggle">
+        <button id="themeToggle" aria-label="Toggle theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
 
-    <h2>Dashboard</h2>
+    <div class="container dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-moon"></i>
+                    <h1>Dashboard</h1>
+                </div>
+                <p class="welcome-text">Welcome back, may your day be blessed</p>
+            </div>
+            <button id="logoutBtn" class="btn btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </header>
 
-    <div id="dates"></div>
-    <div id="eventBox"></div>
+        <main class="dashboard-content">
+            <div class="dashboard-grid">
+                <div class="card date-card">
+                    <div class="card-header">
+                        <h2> Today's Dates</h2>
+                        <i class="fas fa-calendar-days"></i>
+                    </div>
+                    <div class="date-grid" id="dates">
+                        <!-- Dates will be populated here -->
+                    </div>
+                </div>
 
-    <hr>
+                <div class="card event-card">
+                    <div class="card-header">
+                        <h2> Islamic Event</h2>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="event-content" id="eventBox">
+                        <!-- Event will be populated here -->
+                    </div>
+                </div>
 
-    <h3>Email Subscription</h3>
+                <div class="card subscription-card">
+                    <div class="card-header">
+                        <h2> Email Subscription</h2>
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subEmail" class="input-label">
+                            <i class="fas fa-at"></i> Email Address
+                        </label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="subEmail" placeholder="Enter your email for reminders">
+                        </div>
+                    </div>
 
-    <input type="email" id="subEmail" placeholder="Email for reminders">
+                    <div class="form-group">
+                        <label for="language" class="input-label">
+                            <i class="fas fa-language"></i> Preferred Language
+                        </label>
+                        <div class="select-with-icon">
+                            <i class="fas fa-globe"></i>
+                            <select id="language">
+                                <option value="en">English</option>
+                                <option value="ur">Urdu</option>
+                                <option value="ar">Arabic</option>
+                            </select>
+                        </div>
+                    </div>
 
-    <br><br>
+                    <div class="button-group">
+                        <button id="subscribeBtn" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Subscribe
+                        </button>
+                        <button id="unsubscribeBtn" class="btn btn-danger">
+                            <i class="fas fa-times-circle"></i> Unsubscribe
+                        </button>
+                    </div>
 
-    <label for="language">Choose Language:</label>
-    <select id="language">
-        <option value="en">English</option>
-        <option value="ur">Urdu</option>
-        <option value="ar">Arabic</option>
-    </select>
+                    <div class="subscription-info">
+                        <p><i class="fas fa-info-circle"></i> You will receive daily reminders at 5:00 AM</p>
+                        <p id="status" class="status-message"></p>
+                    </div>
+                </div>
 
-    <br><br>
+                <div class="card features-card">
+                    <div class="card-header">
+                        <h2> Premium Features</h2>
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-sun"></i>
+                            <div>
+                                <h4>Daily Sunrise Reminders</h4>
+                                <p>Get notified with Fajr timing</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-book-quran"></i>
+                            <div>
+                                <h4>Quran Verse of the Day</h4>
+                                <p>Daily inspirational verses</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-duotone fa-bell"></i>
+                            <div>
+                                <h4>Custom Reminders</h4>
+                                <p>Set personal Islamic goals</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
 
-    <button id="subscribeBtn">Subscribe</button>
-    <button id="unsubscribeBtn">Unsubscribe</button>
-
-    <p id="status"></p>
-
+        <footer class="dashboard-footer">
+            <p>© 2024 Islamic Daily Reminder • <i class="fas fa-heart"></i> Made with devotion</p>
+            <p class="prayer">May Allah accept our good deeds and forgive our shortcomings</p>
+        </footer>
+    </div>
 
     <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/theme.js"></script>
 </body>
 
 </html>
