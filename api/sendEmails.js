@@ -66,136 +66,15 @@ async function getHijriDate() {
     };
 }
 
-// 📱 Email Content Generator
-function getEmailContent(lang, hijri, gregorian, event, hijriMonthEn, hijriMonthAr) {
-    const logoUrl = "https://islamic-daily-reminder.vercel.app/images/emailicon.jpg";
-    const currentYear = new Date().getFullYear();
-    
-    if (lang === "ur") {
-        return {
-            subject: event
-                ? `🌙 اسلامی موقع: ${event.split(' - ')[0]} — ${hijri}`
-                : `🌙 اسلامی یومیہ یاددہانی — ${hijri}`,
-
-            body: `
-        <div style="text-align: center; margin-bottom: 25px;">
-          <img src="${logoUrl}" alt="اسلامی یومیہ یاددہانی" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #2d6a4f; object-fit: cover;">
-        </div>
-        
-        <div class="date-card" style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.1), rgba(64, 145, 108, 0.05)); padding: 20px; border-radius: 12px; margin: 20px 0; border-right: 4px solid #2d6a4f;">
-          <p style="margin: 0 0 10px 0;"><strong>📅 ہجری تاریخ:</strong> ${hijri}</p>
-          <p style="margin: 0 0 10px 0;"><strong>📅 عیسوی تاریخ:</strong> ${gregorian}</p>
-        </div>
-        
-        <div class="reminder-card" style="background: rgba(255, 158, 0, 0.05); padding: 25px; border-radius: 12px; border: 1px solid rgba(255, 158, 0, 0.2); margin: 25px 0;">
-          <h3 style="color: #d97706; margin-top: 0; margin-bottom: 15px; text-align: center;">📢 آج کی یاددہانی</h3>
-          <p style="font-size: 16px; line-height: 1.8; margin: 0; text-align: center;">
-          ${event || "آج کوئی خاص اسلامی موقع نہیں۔ روزانہ کی نیکیاں جاری رکھیں اور ہر کام میں اللہ کو یاد کریں۔ 🤍"}
-          </p>
-        </div>
-        
-        <div class="dua" style="text-align: center; padding: 20px; background: rgba(45, 106, 79, 0.05); border-radius: 12px; margin: 25px 0; font-style: italic;">
-          <p style="margin: 0; color: #2d6a4f; font-size: 15px;">
-          اللہ آپ کو سلامتی، ہدایت اور برکت عطا فرمائے۔ 🌙
-          </p>
-        </div>
-      `,
-            footer: `
-        <p style="text-align: center; margin: 5px 0;">
-          <small>© ${currentYear} اسلامی یومیہ یاددہانی</small>
-        </p>
-        <p style="text-align: center; margin: 5px 0; color: #666;">
-          <small>یہ ای میل آپ کی درخواست پر بھیجی گئی ہے۔ براہ کرم جواب نہ دیں۔</small>
-        </p>
-      `
-        };
-    }
-
-    if (lang === "ar") {
-        return {
-            subject: event
-                ? `🌙 مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijri}`
-                : `🌙 التذكير الإسلامي اليومي — ${hijri}`,
-
-            body: `
-        <div style="text-align: center; margin-bottom: 25px;">
-          <img src="${logoUrl}" alt="التذكير الإسلامي اليومي" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #2d6a4f; object-fit: cover;">
-        </div>
-        
-        <div class="date-card" style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.1), rgba(64, 145, 108, 0.05)); padding: 20px; border-radius: 12px; margin: 20px 0; border-right: 4px solid #2d6a4f;">
-          <p style="margin: 0 0 10px 0;"><strong>📅 التاريخ الهجري:</strong> ${hijri}</p>
-          <p style="margin: 0 0 10px 0;"><strong>📅 التاريخ الميلادي:</strong> ${gregorian}</p>
-        </div>
-        
-        <div class="reminder-card" style="background: rgba(255, 158, 0, 0.05); padding: 25px; border-radius: 12px; border: 1px solid rgba(255, 158, 0, 0.2); margin: 25px 0;">
-          <h3 style="color: #d97706; margin-top: 0; margin-bottom: 15px; text-align: center;">📢 تذكير اليوم</h3>
-          <p style="font-size: 16px; line-height: 1.8; margin: 0; text-align: center;">
-          ${event || "لا يوجد حدث إسلامي خاص اليوم. واصل أعمالك الصالحة اليومية واذكر الله في كل ما تفعل. 🤍"}
-          </p>
-        </div>
-        
-        <div class="dua" style="text-align: center; padding: 20px; background: rgba(45, 106, 79, 0.05); border-radius: 12px; margin: 25px 0; font-style: italic;">
-          <p style="margin: 0; color: #2d6a4f; font-size: 15px;">
-          نسأل الله أن يمنحك السكينة والهداية والبركة 🌙
-          </p>
-        </div>
-      `,
-            footer: `
-        <p style="text-align: center; margin: 5px 0;">
-          <small>© ${currentYear} التذكير الإسلامي اليومي</small>
-        </p>
-        <p style="text-align: center; margin: 5px 0; color: #666;">
-          <small>تم إرسال هذه الرسالة بناءً على طلبك. الرجاء عدم الرد.</small>
-        </p>
-      `
-        };
-    }
-
-    // Default English
-    return {
-        subject: event
-            ? `🌙 Islamic Event: ${event.split(' - ')[0]} — ${hijri}`
-            : `🌙 Islamic Daily Reminder — ${hijri}`,
-
-        body: `
-        <div style="text-align: center; margin-bottom: 25px;">
-          <img src="${logoUrl}" alt="Islamic Daily Reminder" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #2d6a4f; object-fit: cover;">
-        </div>
-        
-        <div class="date-card" style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.1), rgba(64, 145, 108, 0.05)); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #2d6a4f;">
-          <p style="margin: 0 0 10px 0;"><strong>📅 Hijri Date:</strong> ${hijri}</p>
-          <p style="margin: 0 0 10px 0;"><strong>📅 Gregorian Date:</strong> ${gregorian}</p>
-        </div>
-        
-        <div class="reminder-card" style="background: rgba(255, 158, 0, 0.05); padding: 25px; border-radius: 12px; border: 1px solid rgba(255, 158, 0, 0.2); margin: 25px 0;">
-          <h3 style="color: #d97706; margin-top: 0; margin-bottom: 15px; text-align: center;">📢 Today's Reminder</h3>
-          <p style="font-size: 16px; line-height: 1.8; margin: 0; text-align: center;">
-          ${event || "No major Islamic event today. Continue your daily good deeds and remember Allah in all that you do. 🤍"}
-          </p>
-        </div>
-        
-        <div class="dua" style="text-align: center; padding: 20px; background: rgba(45, 106, 79, 0.05); border-radius: 12px; margin: 25px 0; font-style: italic;">
-          <p style="margin: 0; color: #2d6a4f; font-size: 15px;">
-          May Allah grant you peace, guidance, and barakah 🌙
-          </p>
-        </div>
-      `,
-        footer: `
-        <p style="text-align: center; margin: 5px 0;">
-          <small>© ${currentYear} Islamic Daily Reminder</small>
-        </p>
-        <p style="text-align: center; margin: 5px 0; color: #666;">
-          <small>This email was sent at your request. Please do not reply.</small>
-        </p>
-      `
-    };
-}
-
 // ✉️ Email Sender with Professional Template
 async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     const hijriData = await getHijriDate();
-    const content = getEmailContent(lang, hijri, gregorian, event, hijriData.hijriMonthEn, hijriData.hijriMonthAr);
+    
+    // Define logo URL - FIXED: Now it's accessible in the template
     const logoUrl = "https://islamic-daily-reminder.vercel.app/images/emailicon.jpg";
+    
+    // If logo doesn't exist, use a fallback
+    const fallbackLogo = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%232d6a4f'/><circle cx='65' cy='35' r='20' fill='%2340916c'/></svg>";
 
     // Determine font family based on language
     let fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
@@ -209,13 +88,77 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
         googleFonts = "https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;500&display=swap";
     }
 
+    // Generate subject based on language and event
+    let subject;
+    if (lang === "ur") {
+        subject = event
+            ? `🌙 اسلامی موقع: ${event.split(' - ')[0]} — ${hijri}`
+            : `🌙 اسلامی یومیہ یاددہانی — ${hijri}`;
+    } else if (lang === "ar") {
+        subject = event
+            ? `🌙 مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijri}`
+            : `🌙 التذكير الإسلامي اليومي — ${hijri}`;
+    } else {
+        subject = event
+            ? `🌙 Islamic Event: ${event.split(' - ')[0]} — ${hijri}`
+            : `🌙 Islamic Daily Reminder — ${hijri}`;
+    }
+
+    // Generate email content based on language
+    let emailContent;
+    let emailTitle;
+    let emailSubtitle;
+    let hijriLabel;
+    let gregorianLabel;
+    let reminderTitle;
+    let reminderContent;
+    let quoteContent;
+    let unsubscribeText;
+    let footerText;
+    let requestText;
+
+    if (lang === "ur") {
+        emailTitle = "اسلامی یومیہ یاددہانی";
+        emailSubtitle = "روزانہ کی روحانی رہنمائی";
+        hijriLabel = "ہجری";
+        gregorianLabel = "ميلادي";
+        reminderTitle = "آج کی یاددہانی";
+        reminderContent = event || "آج کوئی خاص اسلامی موقع نہیں۔ روزانہ کی نیکیاں جاری رکھیں اور ہر کام میں اللہ کو یاد کریں۔ 🤍";
+        quoteContent = "اللہ آپ کو سلامتی، ہدایت اور برکت عطا فرمائے۔ 🌙";
+        unsubscribeText = "ان سبسکرائب کریں";
+        footerText = "اسلامی یومیہ یاددہانی";
+        requestText = "یہ ای میل آپ کی درخواست پر بھیجی گئی ہے۔";
+    } else if (lang === "ar") {
+        emailTitle = "التذكير الإسلامي اليومي";
+        emailSubtitle = "الإرشاد الروحي اليومي";
+        hijriLabel = "هجري";
+        gregorianLabel = "ميلادي";
+        reminderTitle = "تذكير اليوم";
+        reminderContent = event || "لا يوجد حدث إسلامي خاص اليوم. واصل أعمالك الصالحة اليومية واذكر الله في كل ما تفعل. 🤍";
+        quoteContent = "نسأل الله أن يمنحك السكينة والهداية والبركة 🌙";
+        unsubscribeText = "إلغاء الاشتراك";
+        footerText = "التذكير الإسلامي اليومي";
+        requestText = "تم إرسال هذه الرسالة بناءً على طلبك.";
+    } else {
+        emailTitle = "Islamic Daily Reminder";
+        emailSubtitle = "Daily Spiritual Guidance";
+        hijriLabel = "Hijri";
+        gregorianLabel = "Gregorian";
+        reminderTitle = "Today's Reminder";
+        reminderContent = event || "No major Islamic event today. Continue your daily good deeds and remember Allah in all that you do. 🤍";
+        quoteContent = "May Allah grant you peace, guidance, and barakah 🌙";
+        unsubscribeText = "Unsubscribe";
+        footerText = "Islamic Daily Reminder";
+        requestText = "This email was sent at your request.";
+    }
+
     const mailOptions = {
         from: {
             name: "Islamic Daily Reminder 🌙",
             address: process.env.GMAIL_USER
         },
         to,
-        subject: content.subject,
+        subject: subject,
         html: `
 <!DOCTYPE html>
 <html lang="${lang}" dir="${lang === "ur" || lang === "ar" ? "rtl" : "ltr"}">
@@ -224,7 +167,7 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href="${googleFonts}" rel="stylesheet">
-    <title>Islamic Daily Reminder</title>
+    <title>${emailTitle}</title>
     <style>
         * {
             margin: 0;
@@ -424,45 +367,41 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
 <body>
     <div class="email-container">
         <div class="header">
-            <img src="${logoUrl}" alt="Islamic Daily Reminder" class="logo-img">
-            <h1>${lang === "ur" ? "اسلامی یومیہ یاددہانی" : lang === "ar" ? "التذكير الإسلامي اليومي" : "Islamic Daily Reminder"}</h1>
-            <p>${lang === "ur" ? "روزانہ کی روحانی رہنمائی" : lang === "ar" ? "الإرشاد الروحي اليومي" : "Daily Spiritual Guidance"}</p>
+            <img src="${logoUrl}" alt="${emailTitle}" class="logo-img" onerror="this.src='${fallbackLogo}'">
+            <h1>${emailTitle}</h1>
+            <p>${emailSubtitle}</p>
         </div>
         
         <div class="content">
             <div class="date-badges">
                 <div class="badge">
                     <span>📅</span>
-                    <span>${lang === "ur" ? "ہجری" : lang === "ar" ? "هجري" : "Hijri"}: ${hijri}</span>
+                    <span>${hijriLabel}: ${hijri}</span>
                 </div>
                 <div class="badge">
                     <span>📅</span>
-                    <span>${lang === "ar" ? "ميلادي" : "Gregorian"}: ${gregorian}</span>
+                    <span>${gregorianLabel}: ${gregorian}</span>
                 </div>
             </div>
             
             <div class="event-section">
                 <div class="event-title">
-                    <span>${lang === "ur" ? "📢" : lang === "ar" ? "📢" : "📢"}</span>
-                    <span>${lang === "ur" ? "آج کی یاددہانی" : lang === "ar" ? "تذكير اليوم" : "Today's Reminder"}</span>
+                    <span>📢</span>
+                    <span>${reminderTitle}</span>
                 </div>
                 <div class="event-content">
-                    ${event || (lang === "ur" ? "آج کوئی خاص اسلامی موقع نہیں۔ روزانہ کی نیکیاں جاری رکھیں اور ہر کام میں اللہ کو یاد کریں۔ 🤍" : 
-                               lang === "ar" ? "لا يوجد حدث إسلامي خاص اليوم. واصل أعمالك الصالحة اليومية واذكر الله في كل ما تفعل. 🤍" : 
-                               "No major Islamic event today. Continue your daily good deeds and remember Allah in all that you do. 🤍")}
+                    ${reminderContent}
                 </div>
             </div>
             
             <div class="quote-section">
-                ${lang === "ur" ? "اللہ آپ کو سلامتی، ہدایت اور برکت عطا فرمائے۔ 🌙" : 
-                  lang === "ar" ? "نسأل الله أن يمنحك السكينة والهداية والبركة 🌙" : 
-                  "May Allah grant you peace, guidance, and barakah 🌙"}
+                ${quoteContent}
             </div>
         </div>
         
         <div class="footer">
             <a href="${unsubscribeUrl}" class="unsubscribe-btn">
-                ${lang === "ur" ? "ان سبسکرائب کریں" : lang === "ar" ? "إلغاء الاشتراك" : "Unsubscribe"}
+                ${unsubscribeText}
             </a>
             
             <div class="social-icons">
@@ -471,10 +410,8 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
             </div>
             
             <div class="copyright">
-                <p>© ${new Date().getFullYear()} ${lang === "ur" ? "اسلامی یومیہ یاددہانی" : lang === "ar" ? "التذكير الإسلامي اليومي" : "Islamic Daily Reminder"}</p>
-                <p>${lang === "ur" ? "یہ ای میل آپ کی درخواست پر بھیجی گئی ہے۔" : 
-                    lang === "ar" ? "تم إرسال هذه الرسالة بناءً على طلبك." : 
-                    "This email was sent at your request."}</p>
+                <p>© ${new Date().getFullYear()} ${footerText}</p>
+                <p>${requestText}</p>
             </div>
         </div>
     </div>
@@ -483,14 +420,14 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
         `,
         
         // Add text version for email clients that don't support HTML
-        text: `${lang === "ur" ? "اسلامی یومیہ یاددہانی" : lang === "ar" ? "التذكير الإسلامي اليومي" : "Islamic Daily Reminder"}\n\n` +
-              `${lang === "ur" ? "ہجری تاریخ:" : lang === "ar" ? "التاريخ الهجري:" : "Hijri Date:"} ${hijri}\n` +
-              `${lang === "ar" ? "التاريخ الميلادي:" : "Gregorian Date:"} ${gregorian}\n\n` +
-              `${lang === "ur" ? "آج کی یاددہانی:" : lang === "ar" ? "تذكير اليوم:" : "Today's Reminder:"}\n` +
+        text: `${emailTitle}\n\n` +
+              `${hijriLabel}: ${hijri}\n` +
+              `${gregorianLabel}: ${gregorian}\n\n` +
+              `${reminderTitle}:\n` +
               `${event || (lang === "ur" ? "آج کوئی خاص اسلامی موقع نہیں۔ اللہ آپ کے دن میں برکت عطا فرمائے۔" : 
                           lang === "ar" ? "لا يوجد حدث إسلامي خاص اليوم. بارك الله في يومك." : 
                           "No major Islamic event today. May Allah bless your day.")}\n\n` +
-              `${lang === "ur" ? "ان سبسکرائب کریں:" : lang === "ar" ? "إلغاء الاشتراك:" : "Unsubscribe:"} ${unsubscribeUrl}`,
+              `${unsubscribeText}: ${unsubscribeUrl}`,
         
         // Email headers for better deliverability
         headers: {
@@ -505,26 +442,81 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log(`✅ Email sent to: ${to} (${lang})`);
+        console.log(`📧 Attempting to send email to: ${to}`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Email sent successfully to: ${to}`);
+        console.log(`📨 Message ID: ${info.messageId}`);
         return true;
     } catch (error) {
-        console.error(`❌ Failed to send email to ${to}:`, error);
+        console.error(`❌ Failed to send email to ${to}:`, error.message);
+        console.error(`📧 Email details:`, { to, subject, lang });
+        
+        // Check if it's a logo URL issue
+        if (error.message.includes('logoUrl') || error.message.includes('undefined')) {
+            console.log('⚠️  Logo URL issue detected, trying with fallback...');
+            // Try with fallback logo in a simplified version
+            mailOptions.html = mailOptions.html.replace(logoUrl, fallbackLogo);
+            try {
+                const retryInfo = await transporter.sendMail(mailOptions);
+                console.log(`✅ Email sent with fallback logo to: ${to}`);
+                return true;
+            } catch (retryError) {
+                console.error(`❌ Retry also failed for ${to}:`, retryError.message);
+                throw retryError;
+            }
+        }
         throw error;
     }
 }
 
-// 🔥 MAIN HANDLER
+// 🔥 MAIN HANDLER with detailed logging
 export default async function handler(req, res) {
+    console.log("🚀 /api/sendEmails endpoint called");
+    console.log("📅 Current time:", new Date().toISOString());
+    console.log("🔍 Environment check:", {
+        hasFirebaseConfig: !!process.env.FIREBASE_PROJECT_ID,
+        hasGmailUser: !!process.env.GMAIL_USER,
+        hasGmailPass: !!process.env.GMAIL_PASS ? "Yes (hidden)" : "No"
+    });
+
     try {
+        // Get today's date
+        console.log("📅 Fetching Hijri date...");
         const hijriData = await getHijriDate();
         const eventKey = `${hijriData.hijriDay}-${hijriData.hijriMonth}`;
         const event = EVENTS[eventKey] || null;
+        
+        console.log("📊 Date info:", {
+            hijri: hijriData.hijri,
+            gregorian: hijriData.gregorian,
+            eventKey,
+            eventFound: !!event
+        });
 
         // Get all active subscriptions
+        console.log("🔍 Querying Firestore for active subscriptions...");
         const snap = await db.collection("subscriptions")
             .where("active", "==", true)
             .get();
+
+        console.log(`📋 Found ${snap.size} active subscriptions`);
+        
+        if (snap.size === 0) {
+            console.log("⚠️  No active subscriptions found");
+            return res.status(200).json({ 
+                success: true, 
+                message: "No active subscriptions found",
+                total: 0,
+                sent: 0,
+                failed: 0
+            });
+        }
+
+        // Log all subscribers
+        snap.forEach((doc, index) => {
+            const data = doc.data();
+            console.log(`   ${index + 1}. ${data.email} (${data.language || 'en'})`);
+        });
 
         const results = {
             success: 0,
@@ -532,18 +524,23 @@ export default async function handler(req, res) {
             errors: []
         };
 
+        console.log("📧 Starting to send emails...");
+        
         // Send emails sequentially to avoid rate limits
         for (const doc of snap.docs) {
-            const { email, active, language } = doc.data();
+            const { email, active, language = "en" } = doc.data();
             
-            // Double-check active status
+            console.log(`\n📨 Processing: ${email} (${language})`);
+            
             if (!active) {
+                console.log(`   ⏭️  Skipping - not active`);
                 results.failed++;
                 continue;
             }
 
             try {
                 const unsubscribeUrl = `https://islamic-daily-reminder.vercel.app/api/unsubscribe?email=${encodeURIComponent(email)}`;
+                console.log(`   🔗 Unsubscribe URL: ${unsubscribeUrl}`);
                 
                 await sendEmail(
                     email,
@@ -551,39 +548,62 @@ export default async function handler(req, res) {
                     hijriData.gregorian,
                     event,
                     unsubscribeUrl,
-                    language || "en"
+                    language
                 );
                 
                 results.success++;
+                console.log(`   ✅ Sent successfully`);
                 
-                // Add delay to avoid hitting rate limits
-                await new Promise(resolve => setTimeout(resolve, 100));
+                // Add small delay between emails to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 500));
                 
             } catch (error) {
                 results.failed++;
                 results.errors.push({
                     email,
-                    error: error.message
+                    error: error.message,
+                    timestamp: new Date().toISOString()
                 });
-                console.error(`Error sending to ${email}:`, error);
+                console.error(`   ❌ Failed: ${error.message}`);
+                
+                // Continue with next email even if one fails
+                continue;
             }
         }
 
-        console.log(`📧 Email sending complete: ${results.success} sent, ${results.failed} failed`);
+        console.log(`\n📊 Email sending completed:`);
+        console.log(`   ✅ Successfully sent: ${results.success}`);
+        console.log(`   ❌ Failed: ${results.failed}`);
+        console.log(`   📧 Total attempted: ${snap.size}`);
         
+        // Return response
         res.status(200).json({ 
             success: true, 
             total: snap.size,
             sent: results.success,
             failed: results.failed,
-            errors: results.errors.length > 0 ? results.errors : undefined
+            errors: results.errors.length > 0 ? results.errors : undefined,
+            summary: {
+                hijriDate: hijriData.hijri,
+                gregorianDate: hijriData.gregorian,
+                eventFound: !!event,
+                timestamp: new Date().toISOString(),
+                processingTime: `${Date.now() - req.startTime || 'unknown'}ms`
+            }
         });
         
     } catch (err) {
-        console.error("❌ Main handler error:", err);
+        console.error("❌ CRITICAL ERROR in handler:", err);
+        console.error("Stack trace:", err.stack);
+        
         res.status(500).json({ 
+            success: false,
             error: err.message,
-            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+            timestamp: new Date().toISOString(),
+            details: process.env.NODE_ENV === 'development' ? {
+                stack: err.stack,
+                name: err.name
+            } : undefined
         });
     }
 }
