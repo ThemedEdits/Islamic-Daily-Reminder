@@ -219,25 +219,31 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
         }
         
         .date-badges {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-        
-        .badge {
-            background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-weight: 500;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
-        }
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 30px 0 20px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: #f9fafb;
+    color: #1f2937;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+}
+
+.badge span:first-child {
+    font-size: 15px;
+}
+
         
         .event-section {
             margin: 35px 0;
@@ -300,30 +306,34 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
         }
         
         .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            background: #2d6a4f;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-        
-        .social-icon:hover {
-            background: #40916c;
-            transform: translateY(-3px);
-        }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin: 18px 0 8px;
+}
+
+.social-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #2d6a4f;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 18px;
+    line-height: 1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.social-icon:hover {
+    background: #40916c;
+    transform: translateY(-2px);
+}
+
         
         .copyright {
             color: #6b7280;
@@ -338,6 +348,20 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
             border: 3px solid rgba(255, 255, 255, 0.3);
             object-fit: cover;
         }
+
+        .content {
+    padding: 32px 28px;
+}
+
+.event-title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.footer {
+    padding: 22px 26px;
+}
+
         
         /* Responsive */
         @media (max-width: 600px) {
