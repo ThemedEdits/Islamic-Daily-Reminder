@@ -195,6 +195,7 @@ function getEmailContent(lang, hijri, gregorian, event, hijriMonthEn, hijriMonth
 async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     const hijriData = await getHijriDate();
     const content = getEmailContent(lang, hijri, gregorian, event, hijriData.hijriMonthEn, hijriData.hijriMonthAr);
+    const logoUrl = "https://islamic-daily-reminder.vercel.app/images/emailicon.jpg";
 
     // Determine font family based on language
     let fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
