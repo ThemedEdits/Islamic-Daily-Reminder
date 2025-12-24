@@ -43,3 +43,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const infoIcon = document.getElementById('subscriptionInfoIcon');
+    const infoPopup = document.getElementById('subscriptionInfoPopup');
+    const closePopupBtn = document.getElementById('closeInfoPopup');
+    const closePopupBtn2 = document.getElementById('closeInfoPopupBtn');
+    
+    if (infoIcon && infoPopup) {
+        // Open popup
+        infoIcon.addEventListener('click', function() {
+            infoPopup.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Close popup
+        function closePopup() {
+            infoPopup.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // Close buttons
+        if (closePopupBtn) closePopupBtn.addEventListener('click', closePopup);
+        if (closePopupBtn2) closePopupBtn2.addEventListener('click', closePopup);
+        
+        // Close on background click
+        infoPopup.addEventListener('click', function(e) {
+            if (e.target === infoPopup) {
+                closePopup();
+            }
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && infoPopup.classList.contains('active')) {
+                closePopup();
+            }
+        });
+    }
+});

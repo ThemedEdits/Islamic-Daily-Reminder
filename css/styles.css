@@ -919,3 +919,269 @@ select:-webkit-autofill:focus {
     border-left: none;
     border-right: 4px solid var(--primary-color);
 }
+
+
+
+
+/* Info Icon Styles */
+.card-header .header-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.card-header .info-icon {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px;
+    border-radius: 50%;
+    background: rgba(45, 106, 79, 0.1);
+}
+
+.card-header .info-icon:hover {
+    color: var(--primary-color);
+    background: rgba(45, 106, 79, 0.2);
+    transform: scale(1.1);
+}
+
+/* Info Popup Styles */
+.info-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+.info-popup.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: var(--card-bg);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    animation: slideUp 0.4s ease;
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(45, 106, 79, 0.05);
+    border-radius: 20px 20px 0 0;
+}
+
+.popup-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-color);
+}
+
+.close-popup {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-popup:hover {
+    background: rgba(211, 47, 47, 0.1);
+    color: var(--error-color);
+    transform: rotate(90deg);
+}
+
+.popup-body {
+    padding: 25px;
+}
+
+.popup-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.popup-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.popup-section h4 {
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.popup-section p {
+    margin: 0 0 10px 0;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.popup-section ul {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+}
+
+.popup-section li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.popup-section li strong {
+    color: var(--primary-color);
+}
+
+.popup-footer {
+    padding: 20px 25px;
+    border-top: 1px solid var(--border-color);
+    background: rgba(45, 106, 79, 0.05);
+    border-radius: 0 0 20px 20px;
+    text-align: center;
+}
+
+#closeInfoPopupBtn {
+    min-width: 120px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .popup-content {
+        width: 95%;
+        max-height: 85vh;
+        margin: 20px;
+    }
+    
+    .popup-header {
+        padding: 15px 20px;
+    }
+    
+    .popup-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .popup-body {
+        padding: 20px;
+    }
+    
+    .popup-section {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+    }
+}
+
+
+
+
+/* ===== SCROLLBAR STYLING ===== */
+
+/* Main scrollbar for the entire page */
+html, body {
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: var(--primary-color) transparent;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(45, 106, 79, 0.05);
+    border-radius: 10px;
+    margin: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary-color), #2d8a5e);
+    border-radius: 10px;
+    border: 2px solid var(--card-bg);
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2d8a5e, var(--primary-color));
+    box-shadow: 0 0 10px rgba(45, 106, 79, 0.3);
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* ===== POPUP SPECIFIC SCROLLBAR ===== */
+.popup-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.popup-content::-webkit-scrollbar-track {
+    background: rgba(45, 106, 79, 0.05);
+    border-radius: 4px;
+    margin: 10px;
+}
+
+.popup-content::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+    border: 2px solid var(--card-bg);
+}
+
+.popup-content::-webkit-scrollbar-thumb:hover {
+    background: #2d8a5e;
+}
+
+/* Firefox specific for popup */
+.popup-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) rgba(45, 106, 79, 0.05);
+}
