@@ -92,16 +92,16 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     let subject;
     if (lang === "ur") {
         subject = event
-            ? `🌙 اسلامی موقع: ${event.split(' - ')[0]} — ${hijri}`
-            : `🌙 اسلامی یومیہ یاددہانی — ${hijri}`;
+            ? `اسلامی موقع: ${event.split(' - ')[0]} — ${hijri}`
+            : `اسلامی یومیہ یاددہانی — ${hijri}`;
     } else if (lang === "ar") {
         subject = event
-            ? `🌙 مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijri}`
-            : `🌙 التذكير الإسلامي اليومي — ${hijri}`;
+            ? `مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijri}`
+            : ` التذكير الإسلامي اليومي — ${hijri}`;
     } else {
         subject = event
-            ? `🌙 Islamic Event: ${event.split(' - ')[0]} — ${hijri}`
-            : `🌙 Islamic Daily Reminder — ${hijri}`;
+            ? `Islamic Event: ${event.split(' - ')[0]} — ${hijri}`
+            : `${hijri} — Islamic Daily Reminder`;
     }
 
     // Generate email content based on language
@@ -154,7 +154,7 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
 
     const mailOptions = {
         from: {
-            name: "Islamic Daily Reminder 🌙",
+            name: "Islamic Daily Reminder",
             address: process.env.GMAIL_USER
         },
         to,
