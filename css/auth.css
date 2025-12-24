@@ -183,10 +183,9 @@
     font-size: 0.85rem;
     color: var(--error-color);
     margin-top: 5px;
-    padding-left: 10px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 7px;
     opacity: 0;
     transform: translateY(-5px);
     transition: all 0.3s ease;
@@ -289,6 +288,7 @@
 /* Success/Error Messages */
 .form-message {
     margin-top: 20px;
+    margin-bottom: 10px;
     padding: 15px;
     border-radius: 12px;
     text-align: center;
@@ -367,6 +367,13 @@
 }
 
 @media (max-width: 480px) {
+
+    .field-error{
+        margin-top: 15px;
+    }
+    .forms-container{
+        min-height: 600px;
+    }
     .auth-container {
         margin: 20px auto;
     }
@@ -387,4 +394,97 @@
     .switch-buttons {
         flex-direction: column;
     }
+}
+
+/* Mobile-specific form container fixes */
+@media (max-width: 900px) {
+  .forms-container {
+    min-height: auto !important; /* Remove fixed height */
+    height: auto !important; /* Let content determine height */
+  }
+  
+  .form-wrapper {
+    position: relative !important; /* Change from absolute to relative */
+    height: auto !important;
+    min-height: 400px; /* Minimum height for mobile */
+    transform: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .form-wrapper.active {
+    display: flex !important;
+  }
+  
+  .form-wrapper:not(.active) {
+    display: none !important; /* Hide inactive form completely */
+  }
+  
+  #loginForm {
+    min-height: 400px; /* Adjust based on login form content */
+  }
+  
+  #signupForm {
+    min-height: 500px; /* Signup needs more height for extra fields */
+  }
+  
+  .form-actions {
+    bottom: 0;
+    background: var(--card-bg);
+    padding: 15px 0;
+    margin-top: 20px;
+    z-index: 10;
+  }
+}
+
+/* Desktop styles - keep original for desktop */
+@media (min-width: 901px) {
+  .forms-container {
+    min-height: 500px;
+    position: relative;
+  }
+  
+  .form-wrapper {
+    position: absolute;
+    height: 100%;
+    padding-bottom: 40px;
+  }
+  
+  #loginForm {
+    min-height: 500px;
+  }
+  
+  #signupForm {
+    min-height: 500px;
+  }
+}
+
+/* Success message fixes for both mobile and desktop */
+.form-message {
+    position: relative;
+    z-index: 1000;
+    /* margin: 20px 0; */
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Ensure form message is visible and properly positioned */
+@media (max-width: 900px) {
+  .form-message {
+    margin-top: 1px;
+    margin-bottom: 30px;
+    order: -1; /* Move success message to top on mobile */
+  }
+  
+  /* Add extra padding when success message shows */
+  .form-wrapper.has-success-message {
+    padding-top: 20px;
+  }
+}
+
+/* Prevent success message from being cut off */
+.forms-container {
+    overflow: visible !important; /* Change from hidden to visible */
 }
