@@ -78,15 +78,14 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
 
     // Determine font family based on language
     let fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
-    let googleFonts = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap";
+    let googleFonts = ""; // NO GOOGLE FONTS FOR EMAILS
 
     if (lang === "ar") {
-        fontFamily = "'Amiri', 'Scheherazade', 'Adobe Arabic', 'Traditional Arabic', serif";
-        googleFonts = ""; // no external fonts in email
+        fontFamily = "'Al Majeed Quranic Font', 'Amiri', 'Scheherazade', 'Traditional Arabic', serif";
     } else if (lang === "ur") {
         fontFamily = "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Arial Unicode MS', serif";
-        googleFonts = ""; // no external fonts in email
     }
+
 
 
     // Generate subject based on language and event
@@ -262,6 +261,21 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     border-left: 4px solid #2d6a4f;
     padding-left: 12px;
 }
+
+.urdu-text {
+  direction: rtl;
+  text-align: right;
+  line-height: 2.3;
+  letter-spacing: 0.01em;
+  word-spacing: 0.15em;
+}
+.arabic-text {
+  direction: rtl;
+  text-align: right;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+}
+
 
         
         .event-content {
