@@ -5,18 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Islamic Daily Reminder - Connect with your faith daily</title>
-    <meta name="description" content="Get daily Islamic reminders, Hijri dates, and important Islamic events delivered to your email. Stay connected with your faith every day.">
+    <meta name="description"
+        content="Get daily Islamic reminders, Hijri dates, and important Islamic events delivered to your email. Stay connected with your faith every day.">
     <meta property="og:title" content="Islamic Daily Reminder">
-    <meta property="og:description" content="Daily Islamic reminders, Hijri dates, and important events delivered to your inbox.">
+    <meta property="og:description"
+        content="Daily Islamic reminders, Hijri dates, and important events delivered to your inbox.">
     <meta property="og:image" content="https://islamic-daily-reminder.vercel.app/images/tabicon.png">
     <meta property="og:url" content="https://islamic-daily-reminder.vercel.app">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Islamic Daily Reminder">
     <meta name="twitter:description" content="Daily Islamic reminders delivered to your inbox">
-    <meta name="twitter:image" content="https://islamic-daily-reminder.vercel.app/images/og-image.png">
+    <meta name="twitter:image" content="https://islamic-daily-reminder.vercel.app/images/tabicon.png">
     <link rel="icon" href="/images/white.png" type="image/svg+xml">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -25,71 +28,142 @@
 <body>
     <div class="theme-toggle">
         <button id="themeToggle" aria-label="Toggle theme">
-      <i class="fas fa-moon"></i>
-    </button>
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
 
     <div class="container">
-        <div class="card auth-card">
-            <div class="logo">
-                <i class="fas fa-moon"></i>
-                <h1>Islamic Daily Reminder</h1>
-            </div>
-            <p class="subtitle">Stay connected with your faith every day</p>
-
-            <div class="form-group floating-group">
-                <div class="input-with-icon">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" required placeholder=" " autocomplete="email">
-                    <label for="email" class="floating-label">
-            Email Address
-          </label>
+        <div class="auth-container">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="logo">
+                    <i class="fas fa-moon"></i>
+                    <h1>Islamic Daily Reminder</h1>
+                </div>
+                <p class="subtitle">Stay connected with your faith every day</p>
+                
+                <div class="welcome-features">
+                    <div class="feature">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Daily Hijri Dates</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-bell"></i>
+                        <span>Event Reminders</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-language"></i>
+                        <span>Multi-language</span>
+                    </div>
+                </div>
+                
+                <div class="switch-buttons">
+                    <button class="switch-btn active" id="switchToLogin">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                    <button class="switch-btn" id="switchToSignup">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
                 </div>
             </div>
 
+            <!-- Forms Container -->
+            <div class="forms-container">
+                <!-- Login Form -->
+                <div class="form-wrapper active" id="loginForm">
+                    <div class="form-header">
+                        <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+                        <p>Sign in to continue your spiritual journey</p>
+                    </div>
+                    
+                    <form id="loginFormElement">
+                        <div class="form-group floating-group">
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="loginEmail" required placeholder=" " autocomplete="email">
+                                <label for="loginEmail" class="floating-label">Email Address</label>
+                            </div>
+                            <div class="field-error" id="loginEmailError"></div>
+                        </div>
 
-            <div class="form-group floating-group">
-                <div class="input-with-icon">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" required placeholder=" " autocomplete="new-password">
-                    <label for="password" class="floating-label">
-            Create a Password
-          </label>
+                        <div class="form-group floating-group">
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="loginPassword" required placeholder=" " autocomplete="current-password">
+                                <label for="loginPassword" class="floating-label">Password</label>
+                                <button type="button" class="toggle-password" id="toggleLoginPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="field-error" id="loginPasswordError"></div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="loginBtn">
+                                <i class="fas fa-sign-in-alt"></i> Sign In
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Signup Form -->
+                <div class="form-wrapper" id="signupForm">
+                    <div class="form-header">
+                        <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                        <p>Start your daily spiritual journey with us</p>
+                    </div>
+                    
+                    <form id="signupFormElement">
+                        <div class="form-group floating-group">
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="signupEmail" required placeholder=" " autocomplete="email">
+                                <label for="signupEmail" class="floating-label">Email Address</label>
+                            </div>
+                            <div class="field-error" id="signupEmailError"></div>
+                        </div>
+
+                        <div class="form-group floating-group">
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="signupPassword" required placeholder=" " autocomplete="new-password">
+                                <label for="signupPassword" class="floating-label">Create Password</label>
+                                <button type="button" class="toggle-password" id="toggleSignupPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="field-error" id="signupPasswordError"></div>
+                            <div class="password-strength">
+                                <div class="strength-meter">
+                                    <div class="strength-fill" id="passwordStrengthFill"></div>
+                                </div>
+                                <div class="strength-text" id="passwordStrengthText">Password strength: Weak</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-group">
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="signupConfirmPassword" required placeholder=" " autocomplete="new-password">
+                                <label for="signupConfirmPassword" class="floating-label">Confirm Password</label>
+                                <button type="button" class="toggle-password" id="toggleConfirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="field-error" id="signupConfirmPasswordError"></div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-success" id="signupBtn">
+                                <i class="fas fa-user-plus"></i> Create Account
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-
-            <div class="button-group">
-                <button id="signupBtn" class="btn btn-primary">
-          <i class="fas fa-user-plus"></i> Create Account
-        </button>
-                <button id="loginBtn" class="btn btn-secondary">
-          <i class="fas fa-sign-in-alt"></i> Sign In
-        </button>
-            </div>
-
-            <div class="features">
-                <div class="feature">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Daily Hijri Dates</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-bell"></i>
-                    <span>Event Reminders</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-language"></i>
-                    <span>Multi-language</span>
-                </div>
-            </div>
-
-            <p id="msg" class="message"></p>
-
-            <p class="disclaimer">
-                <i class="fas fa-info-circle"></i> Your spiritual journey begins here. May Allah bless you.
-            </p>
         </div>
 
+        <!-- Preview Card -->
         <div class="preview-card">
             <div class="preview-header">
                 <h3><i class="fas fa-star"></i> Today's Preview</h3>
@@ -116,12 +190,11 @@
             © 2026 Islamic Daily Reminder — May peace and blessings be upon you.
             <span class="divider">•</span> Designed & Developed by
             <a href="https://themed-edits.vercel.app" target="_blank" rel="noopener">
-        Hammad Ahmed
-      </a>
+                Hammad Ahmed
+            </a>
             <i class="fas fa-heart"></i>
         </p>
     </footer>
-
 
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/preview.js"></script>
