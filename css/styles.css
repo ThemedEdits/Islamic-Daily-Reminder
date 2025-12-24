@@ -726,17 +726,33 @@ select:-webkit-autofill:focus {
 
 /* Footer */
 
-footer {
+.app-footer {
     text-align: center;
-    margin-top: 40px;
-    padding: 25px;
-    color: var(--text-secondary);
+    padding: 20px 15px;
     font-size: 0.9rem;
+    color: var(--text-secondary);
     border-top: 1px solid var(--border-color);
 }
 
-.dashboard-footer {
-    margin-top: 50px;
+.app-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.app-footer a:hover {
+    text-decoration: underline;
+}
+
+.app-footer .fa-heart {
+    color: #e25555;
+    margin-left: 6px;
+}
+
+.app-footer .divider {
+    margin: 0 8px;
+    opacity: 0.5;
 }
 
 .prayer {
