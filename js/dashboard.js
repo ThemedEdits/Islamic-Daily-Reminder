@@ -44,6 +44,94 @@ const hijriMonths = {
     ]
 };
 
+// ADD THIS: Islamic Months Card HTML Template
+const islamicMonthsCardHTML = `
+<div class="card islamic-months-card">
+    <div class="card-header">
+        <h2> Islamic Months</h2>
+        <i class="fas fa-star-and-crescent"></i>
+    </div>
+    <div class="months-container">
+        <div class="months-grid" id="monthsGrid">
+            <!-- Months will be dynamically generated here -->
+        </div>
+        <div class="month-info" id="monthInfo">
+            <div class="info-content">
+                <h3 id="currentMonthName">Select a month</h3>
+                <p id="monthDescription">Click on any month to learn more about it</p>
+                <div class="month-stats">
+                    <div class="stat">
+                        <i class="fas fa-calendar-day"></i>
+                        <span id="monthDays">-- days</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-star"></i>
+                        <span id="monthEvents">No events</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+`;
+
+// ADD THIS: Month descriptions data
+const monthDescriptions = {
+    en: {
+        1: "Muharram - The first month of the Islamic calendar. A sacred month.",
+        2: "Safar - The second month. Some consider it unlucky, but this has no basis in authentic Islamic teachings.",
+        3: "Rabi' al-Awwal - The birth month of Prophet Muhammad ﷺ.",
+        4: "Rabi' al-Thani - The fourth month of the Islamic calendar.",
+        5: "Jumada al-Awwal - The fifth month of the Islamic calendar.",
+        6: "Jumada al-Thani - The sixth month of the Islamic calendar.",
+        7: "Rajab - A sacred month. The journey of Isra' and Mi'raj occurred in this month.",
+        8: "Sha'ban - The month before Ramadan. Prophet Muhammad ﷺ used to fast most of this month.",
+        9: "Ramadan - The month of fasting, prayer, reflection, and community.",
+        10: "Shawwal - The month following Ramadan. Eid al-Fitr is celebrated on the 1st.",
+        11: "Dhu al-Qi'dah - A sacred month. One of the months of Hajj.",
+        12: "Dhu al-Hijjah - The month of Hajj. Eid al-Adha is celebrated on the 10th."
+    },
+    ur: {
+        1: "محرم - اسلامی کیلنڈر کا پہلا مہینہ۔ ایک مقدس مہینہ۔",
+        2: "صفر - دوسرا مہینہ۔ کچھ لوگ اسے منحوس سمجھتے ہیں، لیکن اس کی کوئی صحیح اسلامی بنیاد نہیں ہے۔",
+        3: "ربیع الاول - رسول اللہ ﷺ کا یوم ولادت کا مہینہ۔",
+        4: "ربیع الآخر - اسلامی کیلنڈر کا چوتھا مہینہ۔",
+        5: "جمادی الاول - اسلامی کیلنڈر کا پانچواں مہینہ۔",
+        6: "جمادی الآخر - اسلامی کیلنڈر کا چھٹا مہینہ۔",
+        7: "رجب - ایک مقدس مہینہ۔ اسراء اور معراج کا واقعہ اسی مہینے میں پیش آیا۔",
+        8: "شعبان - رمضان سے پہلے کا مہینہ۔ رسول اللہ ﷺ اس مہینے کے زیادہ تر دنوں میں روزہ رکھتے تھے۔",
+        9: "رمضان - روزے، نماز، تفکر اور اجتماعیت کا مہینہ۔",
+        10: "شوال - رمضان کے بعد کا مہینہ۔ عید الفطر یکم شوال کو منائی جاتی ہے۔",
+        11: "ذوالقعدہ - ایک مقدس مہینہ۔ حج کے مہینوں میں سے ایک۔",
+        12: "ذوالحجہ - حج کا مہینہ۔ عید الاضحی 10 ذوالحجہ کو منائی جاتی ہے۔"
+    },
+    ar: {
+        1: "مُحَرَّم - الشهر الأول من التقويم الهجري. شهر حرام.",
+        2: "صَفَر - الشهر الثاني. يعتبره البعض شهرًا غير مبارك، ولكن هذا ليس له أساس في التعاليم الإسلامية الصحيحة.",
+        3: "رَبِيع ٱلْأَوَّل - شهر مولد النبي محمد ﷺ.",
+        4: "رَبِيع ٱلْآخِر - الشهر الرابع من التقويم الهجري.",
+        5: "جُمَادَىٰ ٱلْأُولَىٰ - الشهر الخامس من التقويم الهجري.",
+        6: "جُمَادَىٰ ٱلْآخِرَة - الشهر الساس من التقويم الهجري.",
+        7: "رَجَب - شهر حرام. حدثت رحلة الإسراء والمعراج في هذا الشهر.",
+        8: "شَعْبَان - الشهر الذي يسبق رمضان. كان النبي محمد ﷺ يصوم معظم هذا الشهر.",
+        9: "رَمَضَان - شهر الصيام والصلاة والتفكير والمجتمع.",
+        10: "شَوَّال - الشهر الذي يلي رمضان. يحتفل بعيد الفطر في الأول منه.",
+        11: "ذُو ٱلْقَعْدَة - شهر حرام. أحد أشهر الحج.",
+        12: "ذُو ٱلْحِجَّة - شهر الحج. يحتفل بعيد الأضحى في العاشر منه."
+    }
+};
+
+// ADD THIS: Month events data
+const monthEvents = {
+    1: ["Islamic New Year (1st)", "Day of Ashura (10th)"],
+    3: ["Eid Milad-un-Nabi ﷺ (12th)"],
+    7: ["Isra' and Mi'raj (27th)"],
+    8: ["Mid-Sha'ban (15th)"],
+    9: ["Start of Ramadan (1st)", "Laylatul Qadr (27th)"],
+    10: ["Eid al-Fitr (1st)"],
+    12: ["Hajj (8th-13th)", "Eid al-Adha (10th)"]
+};
+
 // Load today's dates and events
 async function loadDashboardData() {
     const datesDiv = document.getElementById("dates");
@@ -57,26 +145,28 @@ async function loadDashboardData() {
         // Get current language for month name display
         const userLang = languageSelect.value || 'en';
 
-        // Display dates with month names
+        // Calculate progress percentage for visual indicator
+        const dayNum = parseInt(today.hijriDay);
+        const monthLength = getHijriMonthLength(parseInt(today.hijriMonth));
+        const progressPercent = Math.round((dayNum / monthLength) * 100);
+
+        // Display dates
         datesDiv.innerHTML = `
             <div class="date-item">
                 <span class="date-label">Hijri Date</span>
                 <span class="date-value">${today.hijri}</span>
             </div>
-            <div class="date-label date-item"><span class="date-label">
-            Gregorian Date</span>
+            <div class="date-item">
+                <span class="date-label">Gregorian Date</span>
                 <span class="date-value">${today.gregorian}</span>
             </div>
             <div class="date-item">
-                <span class="date-label">Hijri Day/Month</span>
+                <span class="date-label">Hijri Date</span>
                 <span class="date-value">
                     ${today.hijriDay} ${getMonthName(today, userLang)}
                 </span>
             </div>
-            <div class="date-item">
-                <span class="date-label">Day of Week</span>
-                <span class="date-value">${today.hijriWeekday}</span>
-            </div>
+            
         `;
 
         // Display event
@@ -96,15 +186,120 @@ async function loadDashboardData() {
             </div>
         `;
 
+        // ADD THIS: Render Islamic Months Card
+        renderIslamicMonthsCard(parseInt(today.hijriMonth), userLang);
+
     } catch (error) {
         console.error("Error loading dashboard data:", error);
         datesDiv.innerHTML = `<p class="error">Error loading dates. Please refresh.</p>`;
         eventBox.innerHTML = `<p class="error">Error loading events.</p>`;
+        
+        // Still try to render months card even if date fails
+        renderIslamicMonthsCard(1, 'en');
     }
 }
 
+// ADD THIS: Render Islamic Months Card
+function renderIslamicMonthsCard(currentMonth, lang = 'en') {
+    // Insert the months card before the subscription card if it doesn't exist
+    const subscriptionCard = document.querySelector('.subscription-card');
+    const existingMonthsCard = document.querySelector('.islamic-months-card');
+    
+    if (!existingMonthsCard) {
+        if (subscriptionCard) {
+            subscriptionCard.insertAdjacentHTML('beforebegin', islamicMonthsCardHTML);
+        } else {
+            // If subscription card not found, add to dashboard grid
+            const dashboardGrid = document.querySelector('.dashboard-grid');
+            if (dashboardGrid) {
+                dashboardGrid.insertAdjacentHTML('beforeend', islamicMonthsCardHTML);
+            }
+        }
+    }
+    
+    // Generate months grid
+    const monthsGrid = document.getElementById('monthsGrid');
+    if (!monthsGrid) return;
+    
+    monthsGrid.innerHTML = '';
+    
+    for (let i = 1; i <= 12; i++) {
+        const monthName = hijriMonths[lang] && hijriMonths[lang][i] ? hijriMonths[lang][i] : hijriMonths.en[i];
+        const isCurrent = i === currentMonth;
+        const monthLength = getHijriMonthLength(i);
+        
+        const monthElement = document.createElement('div');
+        monthElement.className = `month-item ${isCurrent ? 'current-month' : ''}`;
+        monthElement.dataset.month = i;
+        monthElement.dataset.lang = lang;
+        
+        monthElement.innerHTML = `
+            <div class="month-number">${i}</div>
+            <div class="month-name">${monthName}</div>
+            <div class="month-days">${monthLength} days</div>
+            ${isCurrent ? '<div class="current-indicator"><i class="fas fa-circle"></i> Current</div>' : ''}
+        `;
+        
+        monthElement.addEventListener('click', () => showMonthInfo(i, lang));
+        monthsGrid.appendChild(monthElement);
+    }
+    
+    // Show info for current month by default
+    showMonthInfo(currentMonth, lang);
+}
+
+// ADD THIS: Show month info
+function showMonthInfo(monthNumber, lang = 'en') {
+    const monthName = hijriMonths[lang] && hijriMonths[lang][monthNumber] ? hijriMonths[lang][monthNumber] : hijriMonths.en[monthNumber];
+    const description = monthDescriptions[lang] && monthDescriptions[lang][monthNumber] ? monthDescriptions[lang][monthNumber] : monthDescriptions.en[monthNumber];
+    const events = monthEvents[monthNumber] || [];
+    const monthLength = getHijriMonthLength(monthNumber);
+    
+    // Update month info display
+    const monthInfo = document.getElementById('monthInfo');
+    const currentMonthName = document.getElementById('currentMonthName');
+    const monthDescription = document.getElementById('monthDescription');
+    const monthDays = document.getElementById('monthDays');
+    const monthEventsElement = document.getElementById('monthEvents');
+    
+    if (currentMonthName) currentMonthName.textContent = monthName;
+    if (monthDescription) monthDescription.textContent = description;
+    if (monthDays) monthDays.textContent = `${monthLength} days`;
+    if (monthEventsElement) {
+        if (events.length > 0) {
+            monthEventsElement.textContent = events.length > 1 ? `${events.length} events` : events[0];
+        } else {
+            monthEventsElement.textContent = 'No major events';
+        }
+    }
+    
+    // Highlight selected month in grid
+    document.querySelectorAll('.month-item').forEach(item => {
+        item.classList.remove('selected');
+        if (parseInt(item.dataset.month) === monthNumber) {
+            item.classList.add('selected');
+        }
+    });
+    
+    // Add animation
+    if (monthInfo) {
+        monthInfo.style.animation = 'none';
+        setTimeout(() => {
+            monthInfo.style.animation = 'slideIn 0.5s ease-out';
+        }, 10);
+    }
+}
+
+// ADD THIS: Get Hijri month length
+function getHijriMonthLength(monthNumber) {
+    // In the Islamic lunar calendar:
+    // Odd-numbered months have 30 days
+    // Even-numbered months have 29 days
+    // Except Dhu al-Hijjah (12th) which can be 29 or 30
+    return monthNumber % 2 === 1 ? 30 : 29;
+}
+
 // Helper function to get month name based on language
-// Then update the getMonthName function:
 function getMonthName(today, lang) {
     const monthIndex = parseInt(today.hijriMonth);
     if (hijriMonths[lang] && hijriMonths[lang][monthIndex]) {
@@ -115,7 +310,7 @@ function getMonthName(today, lang) {
 }
 
 // Subscription functionality
-document.getElementById("subscribeBtn").addEventListener("click", async() => {
+document.getElementById("subscribeBtn").addEventListener("click", async () => {
     const email = emailInput.value.trim();
     const language = languageSelect.value;
 
@@ -183,7 +378,7 @@ document.getElementById("subscribeBtn").addEventListener("click", async() => {
     }
 });
 
-document.getElementById("unsubscribeBtn").addEventListener("click", async() => {
+document.getElementById("unsubscribeBtn").addEventListener("click", async () => {
     const email = emailInput.value.trim();
 
     if (!email) {
@@ -242,7 +437,7 @@ document.getElementById("unsubscribeBtn").addEventListener("click", async() => {
 });
 
 // Logout functionality
-document.getElementById("logoutBtn").addEventListener("click", async() => {
+document.getElementById("logoutBtn").addEventListener("click", async () => {
     try {
         await signOut(auth);
         window.location.href = "index.html";
@@ -280,9 +475,14 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'index.html';
         }
     });
+    
+    // ADD THIS: Update months when language changes
+    if (languageSelect) {
+        languageSelect.addEventListener('change', () => {
+            loadDashboardData();
+        });
+    }
 });
-
-
 
 const select = document.querySelector(".custom-select");
 const display = select.querySelector(".select-display");
@@ -291,25 +491,32 @@ const options = select.querySelectorAll(".select-options li");
 const hiddenInput = document.getElementById("language");
 
 // Toggle curtain
-display.addEventListener("click", () => {
-    select.classList.toggle("open");
-});
+if (display) {
+    display.addEventListener("click", () => {
+        select.classList.toggle("open");
+    });
+}
 
 // Select option
-options.forEach(option => {
-    option.addEventListener("click", () => {
-        const value = option.dataset.value;
-        valueSpan.textContent = option.textContent;
-        hiddenInput.value = value;
+if (options.length > 0) {
+    options.forEach(option => {
+        option.addEventListener("click", () => {
+            const value = option.dataset.value;
+            valueSpan.textContent = option.textContent;
+            hiddenInput.value = value;
 
-        select.classList.add("active");
-        select.classList.remove("open");
+            select.classList.add("active");
+            select.classList.remove("open");
+            
+            // Update months card when language changes
+            loadDashboardData();
+        });
     });
-});
+}
 
 // Close on outside click
 document.addEventListener("click", e => {
-    if (!select.contains(e.target)) {
+    if (select && !select.contains(e.target)) {
         select.classList.remove("open");
     }
 });

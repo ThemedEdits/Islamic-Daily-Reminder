@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Islamic Daily Reminder</title>
-    <meta name="description" content="Manage your Islamic daily reminders, view important dates, and customize your preferences.">
+    <meta name="description"
+        content="Manage your Islamic daily reminders, view important dates, and customize your preferences.">
     <meta property="og:title" content="Dashboard - Islamic Daily Reminder">
     <meta property="og:description" content="Manage your Islamic daily reminders and preferences">
     <meta property="og:image" content="https://islamic-daily-reminder.vercel.app/images/emailicon.jpg">
@@ -62,107 +63,112 @@
                 </div>
 
                 <div class="card subscription-card">
-    <div class="card-header">
-        <h2>Email Subscription</h2>
-        <div class="header-icons">
-            <i class="fas fa-info-circle info-icon" id="subscriptionInfoIcon"></i>
-            <i class="fas fa-bell"></i>
-        </div>
-    </div>
+                    <div class="card-header">
+                        <h2>Email Subscription</h2>
+                        <div class="header-icons">
+                            <i class="fas fa-info-circle info-icon" id="subscriptionInfoIcon"></i>
+                            <i class="fas fa-bell"></i>
+                        </div>
+                    </div>
 
-    <!-- Info Popup (hidden by default) -->
-    <div class="info-popup" id="subscriptionInfoPopup">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3><i class="fas fa-info-circle"></i> About Email Subscription</h3>
-                <button class="close-popup" id="closeInfoPopup">&times;</button>
-            </div>
-            <div class="popup-body">
-                <div class="popup-section">
-                    <h4><i class="fas fa-envelope"></i> Email Address</h4>
-                    <p>Enter the email address where you want to receive your daily spiritual reminders. This can be your personal, work, or any other email you check regularly.</p>
+                    <!-- Info Popup (hidden by default) -->
+                    <div class="info-popup" id="subscriptionInfoPopup">
+                        <div class="popup-content">
+                            <div class="popup-header">
+                                <h3><i class="fas fa-info-circle"></i> About Email Subscription</h3>
+                                <button class="close-popup" id="closeInfoPopup">&times;</button>
+                            </div>
+                            <div class="popup-body">
+                                <div class="popup-section">
+                                    <h4><i class="fas fa-envelope"></i> Email Address</h4>
+                                    <p>Enter the email address where you want to receive your daily spiritual reminders.
+                                        This can be your personal, work, or any other email you check regularly.</p>
+                                </div>
+
+                                <div class="popup-section">
+                                    <h4><i class="fas fa-globe"></i> Preferred Language</h4>
+                                    <p>Choose your preferred language for the reminders:</p>
+                                    <ul>
+                                        <li><strong>English</strong> - Daily reminders in English language</li>
+                                        <li><strong>Urdu</strong> - Daily reminders in Urdu language</li>
+                                        <li><strong>Arabic</strong> - Daily reminders in Arabic language</li>
+                                    </ul>
+                                </div>
+
+                                <div class="popup-section">
+                                    <h4><i class="fas fa-bell"></i> Subscription Details</h4>
+                                    <ul>
+                                        <li><strong>Daily Reminders:</strong> You'll receive one spiritual reminder
+                                            every day</li>
+                                        <li><strong>Delivery Time:</strong> All reminders are sent at 5:00 AM in your
+                                            local time zone</li>
+                                        <li><strong>Content:</strong> Each email contains inspirational quotes, verses,
+                                            or spiritual guidance</li>
+                                    </ul>
+                                </div>
+
+                                <div class="popup-section">
+                                    <h4><i class="fas fa-sync-alt"></i> Management</h4>
+                                    <p>You can subscribe, unsubscribe, or update your preferences at any time. Your
+                                        email is stored securely and will only be used for sending these reminders.</p>
+                                </div>
+                            </div>
+                            <div class="popup-footer">
+                                <button class="btn btn-primary" id="closeInfoPopupBtn">
+                                    <i class="fas fa-check"></i> Got it!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="subEmail" required placeholder=" ">
+                            <label for="subEmail" class="floating-label">
+                                Email Address
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group floating-group">
+                        <div class="custom-select">
+                            <i class="fas fa-globe"></i>
+
+                            <!-- Display -->
+                            <div class="select-display" tabindex="0" id="languageSelect">
+                                <span class="select-value"> </span>
+                            </div>
+
+                            <!-- Floating Label -->
+                            <label class="floating-label">Preferred Language</label>
+
+                            <!-- Curtain Menu -->
+                            <ul class="select-options">
+                                <li data-value="en">English</li>
+                                <li data-value="ur">Urdu</li>
+                                <li data-value="ar">Arabic</li>
+                            </ul>
+
+                            <!-- Hidden input for Firebase -->
+                            <input type="hidden" id="language" required>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="subscribeBtn" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Subscribe
+                        </button>
+                        <button id="unsubscribeBtn" class="btn btn-danger">
+                            <i class="fas fa-times-circle"></i> Unsubscribe
+                        </button>
+                    </div>
+
+                    <div class="subscription-info">
+                        <p><i class="fas fa-info-circle"></i> You will receive daily reminders at 5:00 AM</p>
+                        <p id="status" class="status-message"></p>
+                    </div>
                 </div>
-                
-                <div class="popup-section">
-                    <h4><i class="fas fa-globe"></i> Preferred Language</h4>
-                    <p>Choose your preferred language for the reminders:</p>
-                    <ul>
-                        <li><strong>English</strong> - Daily reminders in English language</li>
-                        <li><strong>Urdu</strong> - Daily reminders in Urdu language</li>
-                        <li><strong>Arabic</strong> - Daily reminders in Arabic language</li>
-                    </ul>
-                </div>
-                
-                <div class="popup-section">
-                    <h4><i class="fas fa-bell"></i> Subscription Details</h4>
-                    <ul>
-                        <li><strong>Daily Reminders:</strong> You'll receive one spiritual reminder every day</li>
-                        <li><strong>Delivery Time:</strong> All reminders are sent at 5:00 AM in your local time zone</li>
-                        <li><strong>Content:</strong> Each email contains inspirational quotes, verses, or spiritual guidance</li>
-                    </ul>
-                </div>
-                
-                <div class="popup-section">
-                    <h4><i class="fas fa-sync-alt"></i> Management</h4>
-                    <p>You can subscribe, unsubscribe, or update your preferences at any time. Your email is stored securely and will only be used for sending these reminders.</p>
-                </div>
-            </div>
-            <div class="popup-footer">
-                <button class="btn btn-primary" id="closeInfoPopupBtn">
-                    <i class="fas fa-check"></i> Got it!
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group floating-group">
-        <div class="input-with-icon">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="subEmail" required placeholder=" ">
-            <label for="subEmail" class="floating-label">
-                Email Address
-            </label>
-        </div>
-    </div>
-
-    <div class="form-group floating-group">
-        <div class="custom-select">
-            <i class="fas fa-globe"></i>
-
-            <!-- Display -->
-            <div class="select-display" tabindex="0" id="languageSelect">
-                <span class="select-value"> </span>
-            </div>
-
-            <!-- Floating Label -->
-            <label class="floating-label">Preferred Language</label>
-
-            <!-- Curtain Menu -->
-            <ul class="select-options">
-                <li data-value="en">English</li>
-                <li data-value="ur">Urdu</li>
-                <li data-value="ar">Arabic</li>
-            </ul>
-
-            <!-- Hidden input for Firebase -->
-            <input type="hidden" id="language" required>
-        </div>
-    </div>
-
-    <div class="button-group">
-        <button id="subscribeBtn" class="btn btn-success">
-            <i class="fas fa-check-circle"></i> Subscribe
-        </button>
-        <button id="unsubscribeBtn" class="btn btn-danger">
-            <i class="fas fa-times-circle"></i> Unsubscribe
-        </button>
-    </div>
-
-    <div class="subscription-info">
-        <p><i class="fas fa-info-circle"></i> You will receive daily reminders at 5:00 AM</p>
-        <p id="status" class="status-message"></p>
-    </div>
-</div>
 
                 <div class="card features-card">
                     <div class="card-header">
@@ -201,8 +207,8 @@
                 © 2026 Islamic Daily Reminder — May peace and blessings be upon you.
                 <span class="divider">•</span> Designed & Developed by
                 <a href="https://themed-edits.vercel.app" target="_blank" rel="noopener">
-        Hammad Ahmed
-      </a>
+                    Hammad Ahmed
+                </a>
                 <i class="fas fa-heart"></i>
             </p>
             <p class="prayer">May Allah accept our good deeds and forgive our shortcomings</p>
