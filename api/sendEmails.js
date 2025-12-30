@@ -21,7 +21,6 @@ const transporter = nodemailer.createTransport({
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS,
     },
-    // Improve email deliverability
     pool: true,
     maxConnections: 5,
     rateDelta: 1000,
@@ -39,13 +38,54 @@ const EVENTS = {
     "10-12": "Eid-ul-Adha - Festival of Sacrifice"
 };
 
-// 🔹 Hijri Date with more details
-async function getHijriDate() {
+// 🔹 Hijri Months for different languages (from dashboard.js)
+const hijriMonths = {
+    en: [
+        "", "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani",
+        "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban",
+        "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
+    ],
+    ur: [
+        "", "محرم", "صفر", "ربيع الأول", "ربيع الآخر",
+        "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان",
+        "رمضان", "شوال", "ذو القعدة", "ذو الحجة"
+    ],
+    ar: [
+        "", "مُحَرَّم", "صَفَر", "رَبِيع ٱلْأَوَّل", "رَبِيع ٱلْآخِر",
+        "جُمَادَىٰ ٱلْأُولَىٰ", "جُمَادَىٰ ٱلْآخِرَة", "رَجَب", "شَعْبَان",
+        "رَمَضَان", "شَوَّال", "ذُو ٱلْقَعْدَة", "ذُو ٱلْحِجَّة"
+    ]
+};
+
+// 🔹 Get Hijri Month Length (from dashboard.js)
+function getHijriMonthLength(monthNumber, method = "global") {
+    if (method === "global") {
+        return monthNumber % 2 === 1 ? 30 : 29;
+    }
+
+    // South Asia (moon sighting approximation) - from dashboard.js
+    if (monthNumber === 12) return 30; // Dhu al-Hijjah often 30
+    if (monthNumber === 9) return 30;  // Ramadan often 30
+    return 29;
+}
+
+// 🔹 Get Month Name based on language (from dashboard.js)
+function getMonthName(monthNumber, lang) {
+    if (hijriMonths[lang] && hijriMonths[lang][monthNumber]) {
+        return hijriMonths[lang][monthNumber];
+    }
+    // Fallback to English
+    return hijriMonths.en[monthNumber];
+}
+
+// 🔹 Get Hijri Date with region support (based on dashboard.js logic)
+async function getHijriToday(method = "global") {
     const today = new Date();
     const d = today.getDate();
     const m = today.getMonth() + 1;
     const y = today.getFullYear();
 
+    // Fetch from Aladhan API
     const res = await fetch(
         `https://api.aladhan.com/v1/gToH?date=${d}-${m}-${y}`
     );
@@ -55,57 +95,91 @@ async function getHijriDate() {
         throw new Error("Failed to fetch Hijri date");
     }
 
+    let hijriDay = parseInt(json.data.hijri.day);
+    let hijriMonth = parseInt(json.data.hijri.month.number);
+    let hijriYear = parseInt(json.data.hijri.year);
+
+    // Apply region-specific adjustments (like in dashboard.js)
+    if (method === "pakistan" || method === "south-asia") {
+        // South Asia often starts months 1 day later
+        const now = new Date();
+        const hours = now.getUTCHours();
+        
+        // If it's before sunset (around 6 PM UTC), use previous day
+        if (hours < 18) {
+            hijriDay = hijriDay - 1;
+            
+            // Handle month/year boundaries
+            if (hijriDay < 1) {
+                hijriMonth = hijriMonth - 1;
+                if (hijriMonth < 1) {
+                    hijriMonth = 12;
+                    hijriYear = hijriYear - 1;
+                }
+                hijriDay = getHijriMonthLength(hijriMonth, method);
+            }
+        }
+    }
+    
+    // For Turkey method (sometimes different calculation)
+    if (method === "turkey") {
+        // Turkey may use different calculation
+        // You can add specific adjustments here if needed
+    }
+
+    // Get month name based on English for now (language will be applied in email)
+    const monthName = hijriMonths.en[hijriMonth] || json.data.hijri.month.en;
+
     return {
-        hijri: json.data.hijri.date,
-        hijriDay: json.data.hijri.day,
-        hijriMonth: json.data.hijri.month.number,
-        hijriMonthEn: json.data.hijri.month.en,
+        hijri: `${hijriDay} ${monthName} ${hijriYear} AH`,
+        hijriDay: hijriDay.toString(),
+        hijriMonth: hijriMonth.toString(),
+        hijriMonthEn: monthName,
         hijriMonthAr: json.data.hijri.month.ar,
         gregorian: json.data.gregorian.date,
-        hijriYear: json.data.hijri.year
+        hijriYear: hijriYear.toString(),
+        method: method
     };
 }
 
 // ✉️ Email Sender with Professional Template
-async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
-    const hijriData = await getHijriDate();
-
-    // Define logo URL - FIXED: Now it's accessible in the template
+async function sendEmail(to, hijriData, event, unsubscribeUrl, lang) {
     const logoUrl = "https://islamic-daily-reminder.vercel.app/images/emailicon.jpg";
-
-    // If logo doesn't exist, use a fallback
     const fallbackLogo = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%232d6a4f'/><circle cx='65' cy='35' r='20' fill='%2340916c'/></svg>";
 
     // Determine font family based on language
     let fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
-    let googleFonts = ""; // NO GOOGLE FONTS FOR EMAILS
-
+    
     if (lang === "ar") {
         fontFamily = "'Al Majeed Quranic Font', 'Amiri', 'Scheherazade', 'Traditional Arabic', serif";
     } else if (lang === "ur") {
         fontFamily = "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Arial Unicode MS', serif";
     }
 
+    // Get month name in user's language
+    const monthNumber = parseInt(hijriData.hijriMonth);
+    const monthName = getMonthName(monthNumber, lang);
 
+    // Format date for display
+    const hijriDisplay = `${hijriData.hijriDay} ${monthName} ${hijriData.hijriYear} AH`;
 
     // Generate subject based on language and event
     let subject;
     if (lang === "ur") {
         subject = event ?
-            `اسلامی موقع: ${event.split(' - ')[0]} — ${hijri}` :
-            `اسلامی یومیہ یاددہانی — ${hijri}`;
+            `اسلامی موقع: ${event.split(' - ')[0]} — ${hijriDisplay}` :
+            `اسلامی یومیہ یاددہانی — ${hijriDisplay}`;
     } else if (lang === "ar") {
         subject = event ?
-            `مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijri}` :
-            ` التذكير الإسلامي اليومي — ${hijri}`;
+            `مناسبة إسلامية: ${event.split(' - ')[0]} — ${hijriDisplay}` :
+            ` التذكير الإسلامي اليومي — ${hijriDisplay}`;
     } else {
         subject = event ?
-            `Islamic Event: ${event.split(' - ')[0]} — ${hijri}` :
-            `${hijri} — Islamic Daily Reminder`;
+            `Islamic Event: ${event.split(' - ')[0]} — ${hijriDisplay}` :
+            `${hijriDisplay} — Islamic Daily Reminder`;
     }
 
     // Generate email content based on language
-    let emailContent;
     let emailTitle;
     let emailSubtitle;
     let hijriLabel;
@@ -166,7 +240,6 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link href="${googleFonts}" rel="stylesheet">
     <title>${emailTitle}</title>
     <style>
         * {
@@ -219,75 +292,55 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
         }
         
         .date-badges {
-    margin: 20px 0 30px;
-    text-align: center;
-}
+            margin: 20px 0 30px;
+            text-align: center;
+        }
 
-.badge {
-    display: inline-block;
-    margin: 6px;
-    padding: 10px 18px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #1f2937;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-}
+        .badge {
+            display: inline-block;
+            margin: 6px;
+            padding: 10px 18px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
 
-.badge span {
-    display: inline-block;
-    vertical-align: middle;
-}
+        .badge span {
+            display: inline-block;
+            vertical-align: middle;
+        }
 
-.badge span:first-child {
-    margin-right: 6px;
-    opacity: 0.85;
-}
-
+        .badge span:first-child {
+            margin-right: 6px;
+            opacity: 0.85;
+        }
         
         .event-section {
             margin: 35px 0;
         }
         
         .event-title {
-    display: block;
-    margin-bottom: 14px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #2d6a4f;
-    text-align: left;
-    border-left: 4px solid #2d6a4f;
-    padding-left: 12px;
-}
+            display: block;
+            margin-bottom: 14px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d6a4f;
+            text-align: left;
+            border-left: 4px solid #2d6a4f;
+            padding-left: 12px;
+        }
 
-.urdu-text {
-  direction: rtl;
-  text-align: right;
-  line-height: 2.3;
-  letter-spacing: 0.01em;
-  word-spacing: 0.15em;
-}
-.arabic-text {
-  direction: rtl;
-  text-align: right;
-  line-height: 1.9;
-  letter-spacing: 0.02em;
-}
-
-
-        
         .event-content {
-            background: rgba(255, 158, 0, 0.05);
-            border-radius: 12px;
-            border-left: ${lang === "ur" || lang === "ar" ? "none" : "4px solid #ff9e00"};
-            border-right: ${lang === "ur" || lang === "ar" ? "4px solid #ff9e00" : "none"};
             background: #f9fafb;
-    padding: 22px;
-    font-size: 15px;
-    line-height: 1.75;
-    color: #374151;
+            padding: 22px;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #374151;
+            border-radius: 12px;
         }
         
         .quote-section {
@@ -326,31 +379,29 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
             transform: translateY(-2px);
         }
         
-       .social-icons {
-    text-align: center;
-    margin: 18px 0 8px;
-}
+        .social-icons {
+            text-align: center;
+            margin: 18px 0 8px;
+        }
 
-.social-icon {
-    display: inline-block;
-    width: 42px;
-    height: 42px;
-    margin: 0 6px;
-    background: #2d6a4f;
-    color: #ffffff;
-    border-radius: 50%;
-    text-decoration: none;
-    font-size: 18px;
-    line-height: 42px; /* 🔑 KEY FIX */
-    text-align: center;
-}
+        .social-icon {
+            display: inline-block;
+            width: 42px;
+            height: 42px;
+            margin: 0 6px;
+            background: #2d6a4f;
+            color: #ffffff;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 18px;
+            line-height: 42px;
+            text-align: center;
+        }
 
-
-.social-icon:hover {
-    background: #40916c;
-    transform: translateY(-2px);
-}
-
+        .social-icon:hover {
+            background: #40916c;
+            transform: translateY(-2px);
+        }
         
         .copyright {
             color: #6b7280;
@@ -366,20 +417,6 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
             object-fit: cover;
         }
 
-        .content {
-    padding: 32px 28px;
-}
-
-.event-title {
-    font-size: 17px;
-    font-weight: 600;
-}
-
-.footer {
-    padding: 22px 26px;
-}
-
-        
         /* Responsive */
         @media (max-width: 600px) {
             .content {
@@ -403,6 +440,22 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
                 padding: 20px;
             }
         }
+
+        /* RTL adjustments */
+        ${lang === "ur" || lang === "ar" ? `
+        .event-title {
+            text-align: right;
+            border-left: none;
+            border-right: 4px solid #2d6a4f;
+            padding-left: 0;
+            padding-right: 12px;
+        }
+        
+        .badge span:first-child {
+            margin-right: 0;
+            margin-left: 6px;
+        }
+        ` : ''}
     </style>
 </head>
 <body>
@@ -417,11 +470,11 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
             <div class="date-badges">
                 <div class="badge">
                     <span>📅</span>
-                    <span>${hijriLabel}: ${hijri}</span>
+                    <span>${hijriLabel}: ${hijriDisplay}</span>
                 </div>
                 <div class="badge">
                     <span>📅</span>
-                    <span>${gregorianLabel}: ${gregorian}</span>
+                    <span>${gregorianLabel}: ${hijriData.gregorian}</span>
                 </div>
             </div>
             
@@ -458,18 +511,7 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
 </body>
 </html>
         `,
-
-        // Add text version for email clients that don't support HTML
-        text: `${emailTitle}\n\n` +
-            `${hijriLabel}: ${hijri}\n` +
-            `${gregorianLabel}: ${gregorian}\n\n` +
-            `${reminderTitle}:\n` +
-            `${event || (lang === "ur" ? "آج کوئی خاص اسلامی موقع نہیں۔ اللہ آپ کے دن میں برکت عطا فرمائے۔" :
-        lang === "ar" ? "لا يوجد حدث إسلامي خاص اليوم. بارك الله في يومك." :
-          "No major Islamic event today. May Allah bless your day.")}\n\n` +
-            `${unsubscribeText}: ${unsubscribeUrl}`,
-
-        // Email headers for better deliverability
+        text: `${emailTitle}\n\n${hijriLabel}: ${hijriDisplay}\n${gregorianLabel}: ${hijriData.gregorian}\n\n${reminderTitle}:\n${reminderContent}\n\n${unsubscribeText}: ${unsubscribeUrl}`,
         headers: {
             'X-Mailer': 'Islamic Daily Reminder',
             'X-Priority': '3',
@@ -489,12 +531,10 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
         return true;
     } catch (error) {
         console.error(`❌ Failed to send email to ${to}:`, error.message);
-        console.error(`📧 Email details:`, { to, subject, lang });
-
+        
         // Check if it's a logo URL issue
         if (error.message.includes('logoUrl') || error.message.includes('undefined')) {
             console.log('⚠️  Logo URL issue detected, trying with fallback...');
-            // Try with fallback logo in a simplified version
             mailOptions.html = mailOptions.html.replace(logoUrl, fallbackLogo);
             try {
                 const retryInfo = await transporter.sendMail(mailOptions);
@@ -509,31 +549,16 @@ async function sendEmail(to, hijri, gregorian, event, unsubscribeUrl, lang) {
     }
 }
 
-// 🔥 MAIN HANDLER with detailed logging
+// 🔥 MAIN HANDLER with region support
 export default async function handler(req, res) {
     console.log("🚀 /api/sendEmails endpoint called");
     console.log("📅 Current time:", new Date().toISOString());
-    console.log("🔍 Environment check:", {
-        hasFirebaseConfig: !!process.env.FIREBASE_PROJECT_ID,
-        hasGmailUser: !!process.env.GMAIL_USER,
-        hasGmailPass: !!process.env.GMAIL_PASS ? "Yes (hidden)" : "No"
-    });
+    
+    // Add start time for processing time calculation
+    const startTime = Date.now();
 
     try {
-        // Get today's date
-        console.log("📅 Fetching Hijri date...");
-        const hijriData = await getHijriDate();
-        const eventKey = `${hijriData.hijriDay}-${hijriData.hijriMonth}`;
-        const event = EVENTS[eventKey] || null;
-
-        console.log("📊 Date info:", {
-            hijri: hijriData.hijri,
-            gregorian: hijriData.gregorian,
-            eventKey,
-            eventFound: !!event
-        });
-
-        // Get all active subscriptions
+        // Get all active subscriptions with their region preferences
         console.log("🔍 Querying Firestore for active subscriptions...");
         const snap = await db.collection("subscriptions")
             .where("active", "==", true)
@@ -552,10 +577,11 @@ export default async function handler(req, res) {
             });
         }
 
-        // Log all subscribers
+        // Log all subscribers with their preferences
+        console.log("📝 Subscriber details:");
         snap.forEach((doc, index) => {
             const data = doc.data();
-            console.log(`   ${index + 1}. ${data.email} (${data.language || 'en'})`);
+            console.log(`   ${index + 1}. ${data.email} (${data.language || 'en'}, method: ${data.hijriMethod || 'global'})`);
         });
 
         const results = {
@@ -564,13 +590,13 @@ export default async function handler(req, res) {
             errors: []
         };
 
-        console.log("📧 Starting to send emails...");
+        console.log("\n📧 Starting to send emails...");
 
-        // Send emails sequentially to avoid rate limits
+        // Send emails with region-specific dates
         for (const doc of snap.docs) {
-            const { email, active, language = "en" } = doc.data();
+            const { email, active, language = "en", hijriMethod = "global" } = doc.data();
 
-            console.log(`\n📨 Processing: ${email} (${language})`);
+            console.log(`\n📨 Processing: ${email} (${language}, method: ${hijriMethod})`);
 
             if (!active) {
                 console.log(`   ⏭️  Skipping - not active`);
@@ -579,13 +605,22 @@ export default async function handler(req, res) {
             }
 
             try {
+                // Get Hijri date with user's selected method
+                const hijriData = await getHijriToday(hijriMethod);
+                
+                // Check for events based on the region-corrected date
+                const eventKey = `${hijriData.hijriDay}-${hijriData.hijriMonth}`;
+                const event = EVENTS[eventKey] || null;
+
+                console.log(`   📊 Date: ${hijriData.hijri} (using ${hijriMethod} method)`);
+                console.log(`   🎯 Event found: ${event ? 'Yes' : 'No'}`);
+
                 const unsubscribeUrl = `https://islamic-daily-reminder.vercel.app/api/unsubscribe?email=${encodeURIComponent(email)}`;
                 console.log(`   🔗 Unsubscribe URL: ${unsubscribeUrl}`);
 
                 await sendEmail(
                     email,
-                    hijriData.hijri,
-                    hijriData.gregorian,
+                    hijriData,
                     event,
                     unsubscribeUrl,
                     language
@@ -594,7 +629,7 @@ export default async function handler(req, res) {
                 results.success++;
                 console.log(`   ✅ Sent successfully`);
 
-                // Add small delay between emails to avoid rate limiting
+                // Add delay to avoid rate limiting
                 await new Promise(resolve => setTimeout(resolve, 500));
 
             } catch (error) {
@@ -605,18 +640,17 @@ export default async function handler(req, res) {
                     timestamp: new Date().toISOString()
                 });
                 console.error(`   ❌ Failed: ${error.message}`);
-
-                // Continue with next email even if one fails
                 continue;
             }
         }
 
+        const processingTime = Date.now() - startTime;
+        
         console.log(`\n📊 Email sending completed:`);
         console.log(`   ✅ Successfully sent: ${results.success}`);
         console.log(`   ❌ Failed: ${results.failed}`);
-        console.log(`   📧 Total attempted: ${snap.size}`);
+        console.log(`   ⏱️  Processing time: ${processingTime}ms`);
 
-        // Return response
         res.status(200).json({
             success: true,
             total: snap.size,
@@ -624,11 +658,10 @@ export default async function handler(req, res) {
             failed: results.failed,
             errors: results.errors.length > 0 ? results.errors : undefined,
             summary: {
-                hijriDate: hijriData.hijri,
-                gregorianDate: hijriData.gregorian,
-                eventFound: !!event,
                 timestamp: new Date().toISOString(),
-                processingTime: `${Date.now() - req.startTime || 'unknown'}ms`
+                processingTime: `${processingTime}ms`,
+                message: `Sent ${results.success} emails with region-specific dates`,
+                regionSupport: "Enabled - Users receive dates according to their selected Hijri method"
             }
         });
 
