@@ -175,6 +175,31 @@
                         </div>
                     </div>
 
+                    <div class="form-group floating-group">
+    <div class="custom-select" id="hijriMethodWrapper">
+        <i class="fas fa-moon"></i>
+
+        <div class="select-display" tabindex="0" id="hijriMethodSelect">
+            <span class="select-value">South Asia (Pakistan / India)</span>
+        </div>
+
+        <label class="floating-label">Hijri Calendar Method</label>
+
+        <ul class="select-options">
+            <li data-value="pakistan">Pakistan (Ruet-e-Hilal)</li>
+<li data-value="global">Global (Calculated)</li>
+
+        </ul>
+
+        <input type="hidden" id="hijriMethod" value="karachi">
+    </div>
+
+    <small class="hint">
+        Hijri dates may vary based on moon sighting
+    </small>
+</div>
+
+
                     <div class="button-group">
                         <button id="subscribeBtn" class="btn btn-success">
                             <i class="fas fa-check-circle"></i> Subscribe

@@ -13,6 +13,8 @@ import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-aut
 const emailInput = document.getElementById("subEmail");
 const languageSelect = document.getElementById("language");
 const status = document.getElementById("status");
+const hijriMethodInput = document.getElementById("hijriMethod");
+
 
 // Islamic events data
 const EVENTS = {
@@ -138,7 +140,10 @@ async function loadDashboardData() {
     const eventBox = document.getElementById("eventBox");
 
     try {
-        const today = await getHijriToday();
+        const hijriMethod = hijriMethodInput?.value || "pakistan";
+
+const today = await getHijriToday(hijriMethod);
+
         const eventKey = `${today.hijriDay}-${today.hijriMonth}`;
         const event = EVENTS[eventKey];
 
@@ -351,12 +356,14 @@ document.getElementById("subscribeBtn").addEventListener("click", async () => {
         } else {
             // New subscription
             await addDoc(collection(db, "subscriptions"), {
-                email,
-                active: true,
-                language,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            });
+    email,
+    active: true,
+    language,
+    hijriMethod: hijriMethodInput.value || "karachi",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+});
+
 
             showStatus("Subscribed successfully! You'll receive your first reminder tomorrow morning.", "success");
         }
@@ -413,9 +420,12 @@ document.getElementById("unsubscribeBtn").addEventListener("click", async () => 
 
         snap.forEach(async doc => {
             await updateDoc(doc.ref, {
-                active: false,
-                unsubscribedAt: new Date().toISOString()
-            });
+    active: true,
+    language,
+    hijriMethod: hijriMethodInput.value || "karachi",
+    updatedAt: new Date().toISOString()
+});
+
         });
 
         showStatus("You have been unsubscribed. We'll miss you! May Allah keep you guided.", "success");
@@ -489,6 +499,33 @@ const display = select.querySelector(".select-display");
 const valueSpan = select.querySelector(".select-value");
 const options = select.querySelectorAll(".select-options li");
 const hiddenInput = document.getElementById("language");
+const hijriSelect = document.getElementById("hijriMethodWrapper");
+const hijriDisplay = hijriSelect?.querySelector(".select-display");
+const hijriValueSpan = hijriSelect?.querySelector(".select-value");
+const hijriOptions = hijriSelect?.querySelectorAll(".select-options li");
+
+if (hijriDisplay) {
+    hijriDisplay.addEventListener("click", () => {
+        hijriSelect.classList.toggle("open");
+    });
+}
+
+if (hijriOptions) {
+    hijriOptions.forEach(option => {
+        option.addEventListener("click", () => {
+            const value = option.dataset.value;
+            hijriValueSpan.textContent = option.textContent;
+            hijriMethodInput.value = value;
+
+            hijriSelect.classList.add("active");
+            hijriSelect.classList.remove("open");
+
+            // 🔁 Reload dashboard with new method
+            loadDashboardData();
+        });
+    });
+}
+
 
 // Toggle curtain
 if (display) {
