@@ -323,6 +323,7 @@ function getMonthName(today, lang) {
 document.getElementById("subscribeBtn").addEventListener("click", async () => {
     const email = emailInput.value.trim();
     const language = languageSelect.value;
+    const hijriMethod = hijriMethodInput?.value || "pakistan";
 
     if (!email) {
         showStatus("Please enter a valid email address.", "error");
@@ -348,27 +349,27 @@ document.getElementById("subscribeBtn").addEventListener("click", async () => {
         const snap = await getDocs(q);
 
         if (!snap.empty) {
-            // Update existing subscription
+            // Update existing subscription WITH hijriMethod
             snap.forEach(async doc => {
                 await updateDoc(doc.ref, {
                     active: true,
                     language,
+                    hijriMethod: hijriMethod, // ADD THIS LINE
                     updatedAt: new Date().toISOString()
                 });
             });
 
             showStatus("Subscription reactivated successfully! You'll start receiving reminders tomorrow.", "success");
         } else {
-            // New subscription
+            // New subscription WITH hijriMethod
             await addDoc(collection(db, "subscriptions"), {
                 email,
                 active: true,
                 language,
-                hijriMethod: hijriMethodInput.value || "pakistan",
+                hijriMethod: hijriMethod, // ADD THIS LINE
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });
-
 
             showStatus("Subscribed successfully! You'll receive your first reminder tomorrow morning.", "success");
         }
@@ -423,14 +424,14 @@ document.getElementById("unsubscribeBtn").addEventListener("click", async () => 
             return;
         }
 
+        // Keep hijriMethod but set active to false
         snap.forEach(async doc => {
+            const data = doc.data();
             await updateDoc(doc.ref, {
-                active: true,
-                language,
-                hijriMethod: hijriMethodInput.value || "pakistan",
+                active: false,
                 updatedAt: new Date().toISOString()
+                // Don't clear hijriMethod, keep it for if they resubscribe
             });
-
         });
 
         showStatus("You have been unsubscribed. We'll miss you! May Allah keep you guided.", "success");
@@ -517,22 +518,165 @@ if (hijriDisplay) {
 
 if (hijriOptions) {
     hijriOptions.forEach(option => {
-        option.addEventListener("click", () => {
+        option.addEventListener("click", async () => {
             const value = option.dataset.value;
+            const text = option.textContent;
 
-            hijriValueSpan.textContent = option.textContent;
+            hijriValueSpan.textContent = text;
             hijriMethodInput.value = value;
 
             hijriSelect.classList.add("active");
             hijriSelect.classList.remove("open");
 
-            // 🔁 FORCE refresh
+            // Save the updated method to Firestore
+            const user = auth.currentUser;
+            if (user && user.email) {
+                const success = await updateHijriMethod(user.email, value);
+                if (success) {
+                    showStatus(`Hijri method updated to ${text}`, "success");
+                }
+            }
+
+            // Update dashboard
             loadDashboardData();
         });
-
     });
 }
 
+
+// Function to update Hijri method for existing users
+async function updateHijriMethod(email, hijriMethod) {
+    try {
+        const q = query(
+            collection(db, "subscriptions"),
+            where("email", "==", email)
+        );
+
+        const snap = await getDocs(q);
+
+        if (!snap.empty) {
+            snap.forEach(async doc => {
+                await updateDoc(doc.ref, {
+                    hijriMethod: hijriMethod,
+                    updatedAt: new Date().toISOString()
+                });
+                console.log(`Updated Hijri method to ${hijriMethod} for ${email}`);
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error("Error updating Hijri method:", error);
+        return false;
+    }
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load user's saved preferences first
+    auth.onAuthStateChanged(async (user) => {
+        if (!user && window.location.pathname.includes('dashboard.html')) {
+            window.location.href = 'index.html';
+        }
+        
+        if (user && user.email) {
+            try {
+                // Fetch user's subscription to get saved hijriMethod
+                const q = query(
+                    collection(db, "subscriptions"),
+                    where("email", "==", user.email)
+                );
+                
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    const userData = snap.docs[0].data();
+                    
+                    // Set the saved hijriMethod
+                    if (userData.hijriMethod && hijriMethodInput) {
+                        hijriMethodInput.value = userData.hijriMethod;
+                        
+                        // Update UI to show saved method
+                        const hijriSelect = document.getElementById("hijriMethodWrapper");
+                        if (hijriSelect) {
+                            const hijriValueSpan = hijriSelect.querySelector(".select-value");
+                            const hijriOptions = hijriSelect.querySelectorAll(".select-options li");
+                            
+                            // Find and set the correct option
+                            hijriOptions.forEach(option => {
+                                if (option.dataset.value === userData.hijriMethod) {
+                                    hijriValueSpan.textContent = option.textContent;
+                                    hijriSelect.classList.add("active");
+                                }
+                            });
+                        }
+                    }
+                    
+                    // Set language if saved
+                    if (userData.language && languageSelect) {
+                        languageSelect.value = userData.language;
+                        
+                        // Update language selector UI
+                        const langSelect = document.querySelector(".custom-select");
+                        if (langSelect) {
+                            const langValueSpan = langSelect.querySelector(".select-value");
+                            const langOptions = langSelect.querySelectorAll(".select-options li");
+                            
+                            langOptions.forEach(option => {
+                                if (option.dataset.value === userData.language) {
+                                    langValueSpan.textContent = option.textContent;
+                                    langSelect.classList.add("active");
+                                }
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading user preferences:", error);
+            }
+        }
+        
+        // Load dashboard data with user's preferences
+        loadDashboardData();
+    });
+
+    // Update months when language changes
+    if (languageSelect) {
+        languageSelect.addEventListener('change', async () => {
+            // Save language preference
+            const user = auth.currentUser;
+            if (user && user.email) {
+                await updateUserPreference(user.email, 'language', languageSelect.value);
+            }
+            loadDashboardData();
+        });
+    }
+});
+
+// Helper function to update user preferences
+async function updateUserPreference(email, field, value) {
+    try {
+        const q = query(
+            collection(db, "subscriptions"),
+            where("email", "==", email)
+        );
+
+        const snap = await getDocs(q);
+
+        if (!snap.empty) {
+            snap.forEach(async doc => {
+                await updateDoc(doc.ref, {
+                    [field]: value,
+                    updatedAt: new Date().toISOString()
+                });
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error(`Error updating ${field}:`, error);
+        return false;
+    }
+}
 
 // Toggle curtain
 if (display) {
