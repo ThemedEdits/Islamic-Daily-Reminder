@@ -138,21 +138,22 @@ const monthEvents = {
 async function loadDashboardData() {
     const datesDiv = document.getElementById("dates");
     const eventBox = document.getElementById("eventBox");
+    const userLang = languageSelect.value || 'en';
+    const hijriMethod = hijriMethodInput?.value || "pakistan";
 
     try {
-        const hijriMethod = hijriMethodInput?.value || "pakistan";
 
-const today = await getHijriToday(hijriMethod);
+        const today = await getHijriToday(hijriMethod);
 
         const eventKey = `${today.hijriDay}-${today.hijriMonth}`;
         const event = EVENTS[eventKey];
 
         // Get current language for month name display
-        const userLang = languageSelect.value || 'en';
+
 
         // Calculate progress percentage for visual indicator
         const dayNum = parseInt(today.hijriDay);
-        const monthLength = getHijriMonthLength(parseInt(today.hijriMonth));
+        const monthLength = getHijriMonthLength(parseInt(today.hijriMonth), hijriMethod);
         const progressPercent = Math.round((dayNum / monthLength) * 100);
 
         // Display dates
@@ -198,7 +199,7 @@ const today = await getHijriToday(hijriMethod);
         console.error("Error loading dashboard data:", error);
         datesDiv.innerHTML = `<p class="error">Error loading dates. Please refresh.</p>`;
         eventBox.innerHTML = `<p class="error">Error loading events.</p>`;
-        
+
         // Still try to render months card even if date fails
         renderIslamicMonthsCard(1, 'en');
     }
@@ -209,7 +210,7 @@ function renderIslamicMonthsCard(currentMonth, lang = 'en') {
     // Insert the months card before the subscription card if it doesn't exist
     const subscriptionCard = document.querySelector('.subscription-card');
     const existingMonthsCard = document.querySelector('.islamic-months-card');
-    
+
     if (!existingMonthsCard) {
         if (subscriptionCard) {
             subscriptionCard.insertAdjacentHTML('beforebegin', islamicMonthsCardHTML);
@@ -221,34 +222,34 @@ function renderIslamicMonthsCard(currentMonth, lang = 'en') {
             }
         }
     }
-    
+
     // Generate months grid
     const monthsGrid = document.getElementById('monthsGrid');
     if (!monthsGrid) return;
-    
+
     monthsGrid.innerHTML = '';
-    
+
     for (let i = 1; i <= 12; i++) {
         const monthName = hijriMonths[lang] && hijriMonths[lang][i] ? hijriMonths[lang][i] : hijriMonths.en[i];
         const isCurrent = i === currentMonth;
         const monthLength = getHijriMonthLength(i);
-        
+
         const monthElement = document.createElement('div');
         monthElement.className = `month-item ${isCurrent ? 'current-month' : ''}`;
         monthElement.dataset.month = i;
         monthElement.dataset.lang = lang;
-        
+
         monthElement.innerHTML = `
             <div class="month-number">${i}</div>
             <div class="month-name">${monthName}</div>
             <div class="month-days">${monthLength} days</div>
             ${isCurrent ? '<div class="current-indicator"><i class="fas fa-circle"></i> Current</div>' : ''}
         `;
-        
+
         monthElement.addEventListener('click', () => showMonthInfo(i, lang));
         monthsGrid.appendChild(monthElement);
     }
-    
+
     // Show info for current month by default
     showMonthInfo(currentMonth, lang);
 }
@@ -259,14 +260,14 @@ function showMonthInfo(monthNumber, lang = 'en') {
     const description = monthDescriptions[lang] && monthDescriptions[lang][monthNumber] ? monthDescriptions[lang][monthNumber] : monthDescriptions.en[monthNumber];
     const events = monthEvents[monthNumber] || [];
     const monthLength = getHijriMonthLength(monthNumber);
-    
+
     // Update month info display
     const monthInfo = document.getElementById('monthInfo');
     const currentMonthName = document.getElementById('currentMonthName');
     const monthDescription = document.getElementById('monthDescription');
     const monthDays = document.getElementById('monthDays');
     const monthEventsElement = document.getElementById('monthEvents');
-    
+
     if (currentMonthName) currentMonthName.textContent = monthName;
     if (monthDescription) monthDescription.textContent = description;
     if (monthDays) monthDays.textContent = `${monthLength} days`;
@@ -277,7 +278,7 @@ function showMonthInfo(monthNumber, lang = 'en') {
             monthEventsElement.textContent = 'No major events';
         }
     }
-    
+
     // Highlight selected month in grid
     document.querySelectorAll('.month-item').forEach(item => {
         item.classList.remove('selected');
@@ -285,7 +286,7 @@ function showMonthInfo(monthNumber, lang = 'en') {
             item.classList.add('selected');
         }
     });
-    
+
     // Add animation
     if (monthInfo) {
         monthInfo.style.animation = 'none';
@@ -296,13 +297,17 @@ function showMonthInfo(monthNumber, lang = 'en') {
 }
 
 // ADD THIS: Get Hijri month length
-function getHijriMonthLength(monthNumber) {
-    // In the Islamic lunar calendar:
-    // Odd-numbered months have 30 days
-    // Even-numbered months have 29 days
-    // Except Dhu al-Hijjah (12th) which can be 29 or 30
-    return monthNumber % 2 === 1 ? 30 : 29;
+function getHijriMonthLength(monthNumber, method = "pakistan") {
+    if (method === "global") {
+        return monthNumber % 2 === 1 ? 30 : 29;
+    }
+
+    // South Asia (moon sighting approximation)
+    if (monthNumber === 12) return 30; // Dhu al-Hijjah often 30
+    if (monthNumber === 9) return 30;  // Ramadan often 30
+    return 29;
 }
+
 
 // Helper function to get month name based on language
 function getMonthName(today, lang) {
@@ -356,13 +361,13 @@ document.getElementById("subscribeBtn").addEventListener("click", async () => {
         } else {
             // New subscription
             await addDoc(collection(db, "subscriptions"), {
-    email,
-    active: true,
-    language,
-    hijriMethod: hijriMethodInput.value || "karachi",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-});
+                email,
+                active: true,
+                language,
+                hijriMethod: hijriMethodInput.value || "pakistan",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
 
 
             showStatus("Subscribed successfully! You'll receive your first reminder tomorrow morning.", "success");
@@ -420,11 +425,11 @@ document.getElementById("unsubscribeBtn").addEventListener("click", async () => 
 
         snap.forEach(async doc => {
             await updateDoc(doc.ref, {
-    active: true,
-    language,
-    hijriMethod: hijriMethodInput.value || "karachi",
-    updatedAt: new Date().toISOString()
-});
+                active: true,
+                language,
+                hijriMethod: hijriMethodInput.value || "pakistan",
+                updatedAt: new Date().toISOString()
+            });
 
         });
 
@@ -485,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'index.html';
         }
     });
-    
+
     // ADD THIS: Update months when language changes
     if (languageSelect) {
         languageSelect.addEventListener('change', () => {
@@ -514,15 +519,17 @@ if (hijriOptions) {
     hijriOptions.forEach(option => {
         option.addEventListener("click", () => {
             const value = option.dataset.value;
+
             hijriValueSpan.textContent = option.textContent;
             hijriMethodInput.value = value;
 
             hijriSelect.classList.add("active");
             hijriSelect.classList.remove("open");
 
-            // 🔁 Reload dashboard with new method
+            // 🔁 FORCE refresh
             loadDashboardData();
         });
+
     });
 }
 
@@ -544,7 +551,7 @@ if (options.length > 0) {
 
             select.classList.add("active");
             select.classList.remove("open");
-            
+
             // Update months card when language changes
             loadDashboardData();
         });

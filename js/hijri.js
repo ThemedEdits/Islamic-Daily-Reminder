@@ -1,35 +1,44 @@
 export async function getHijriToday(method = "pakistan") {
-  const today = new Date();
-  const day = today.getDate();
-  const month = today.getMonth() + 1;
-  const year = today.getFullYear();
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1;
+    const year = today.getFullYear();
 
-  // 👇 Offsets based on region
-  let adjustment = 0;
+    const res = await fetch(
+        `https://api.aladhan.com/v1/gToH?date=${day}-${month}-${year}`
+    );
 
-  if (method === "pakistan") {
-    adjustment = -1; // 🇵🇰 Pakistan moon sighting
-  }
-if (method === "global") adjustment = 0;
+    const json = await res.json();
+    if (!json.data) {
+        throw new Error("Failed to fetch Hijri date");
+    }
 
-  const res = await fetch(
-    `https://api.aladhan.com/v1/gToH?date=${day}-${month}-${year}&adjustment=${adjustment}`
-  );
+    let hijri = json.data.hijri;
 
-  const json = await res.json();
+    // ✅ SOUTH ASIA ADJUSTMENT
+    if (method === "pakistan") {
+        // Pakistan / India usually 1 day behind calculated
+        let adjustedDay = parseInt(hijri.day) - 1;
 
-  if (!json.data) {
-    throw new Error("Failed to fetch Hijri date");
-  }
+        if (adjustedDay <= 0) {
+            adjustedDay = 29; // safe fallback
+        }
 
-  return {
-    hijri: json.data.hijri.date,
-    hijriDay: json.data.hijri.day,
-    hijriMonth: json.data.hijri.month.number,
-    hijriMonthEn: json.data.hijri.month.en,
-    hijriMonthAr: json.data.hijri.month.ar,
-    gregorian: json.data.gregorian.date,
-    gregorianWeekday: json.data.gregorian.weekday.en,
-    hijriWeekday: json.data.hijri.weekday.en
-  };
+        hijri = {
+            ...hijri,
+            day: adjustedDay.toString().padStart(2, "0"),
+            date: `${adjustedDay}-${hijri.month.number}-${hijri.year}`
+        };
+    }
+
+    return {
+        hijri: hijri.date,
+        hijriDay: hijri.day,
+        hijriMonth: hijri.month.number,
+        hijriMonthEn: hijri.month.en,
+        hijriMonthAr: hijri.month.ar,
+        gregorian: json.data.gregorian.date,
+        gregorianWeekday: json.data.gregorian.weekday.en,
+        hijriWeekday: hijri.weekday.en
+    };
 }
