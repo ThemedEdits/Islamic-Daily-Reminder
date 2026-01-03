@@ -18,14 +18,76 @@ const hijriMethodInput = document.getElementById("hijriMethod");
 
 // Islamic events data
 const EVENTS = {
-    "1-1": "Islamic New Year - A time for reflection and new beginnings",
-    "10-1": "Day of Ashura - Fasting recommended on this day",
-    "12-3": "Eid Milad-un-Nabi ﷺ - Birth of Prophet Muhammad (PBUH)",
-    "1-9": "Start of Ramadan - Month of fasting and spiritual reflection",
-    "27-9": "Laylatul Qadr - The Night of Power, better than 1000 months",
-    "1-10": "Eid-ul-Fitr - Festival of breaking the fast",
-    "10-12": "Eid-ul-Adha - Festival of sacrifice"
+  // ──────────────── MUHARRAM ────────────────
+  "1-1": "Islamic New Year (1st Muharram) – Beginning of the Hijri year, a time for reflection and renewal.",
+  "2-1": "Arrival of the Hijri New Year – Reflecting upon migration, patience, and faith.",
+  "9-1": "Tasu'a – The day before Ashura, observed with fasting by many.",
+  "10-1": "Day of Ashura – Martyrdom of Imam Hussain (RA); fasting recommended by Prophet ﷺ.",
+  "11-1": "Aftermath of Karbala – Remembering sacrifice, patience, and steadfastness.",
+  "20-1": "Chehlum Preparation Period – Reflection on Karbala and moral courage.",
+
+  // ──────────────── SAFAR ────────────────
+  "1-2": "Start of Safar – Month of patience; false superstitions rejected in Islam.",
+  "20-2": "Chehlum (Arbaeen) – Completion of 40 days after Ashura, remembrance of Karbala.",
+  "28-2": "Urs of Imam Hasan (RA) – According to some narrations.",
+
+  // ──────────────── RABI-UL-AWWAL ────────────────
+  "1-3": "Beginning of Rabi-ul-Awwal – Month of mercy and blessings.",
+  "8-3": "Blessed events of Seerah – Early life events of Prophet Muhammad ﷺ.",
+  "12-3": "Eid Milad-un-Nabi ﷺ – Birth of Prophet Muhammad ﷺ, celebration of mercy to mankind.",
+  "17-3": "Urs of Imam Zain-ul-Abideen (RA) – According to historical reports.",
+
+  // ──────────────── RABI-UL-THANI ────────────────
+  "1-4": "Beginning of Rabi-us-Sani – Reflection on patience and knowledge.",
+  "11-4": "Urs of Sheikh Abdul Qadir Jilani (RA) – Great Islamic scholar and saint.",
+
+  // ──────────────── JUMADA-UL-AWWAL ────────────────
+  "1-5": "Start of Jumada-ul-Awwal – Month of remembrance.",
+  "13-5": "Martyrdom of Bibi Fatima (RA) – According to some narrations.",
+
+  // ──────────────── JUMADA-UL-THANI ────────────────
+  "1-6": "Start of Jumada-us-Sani – Continued reflection on faith.",
+  "20-6": "Urs of Imam Abu Hanifa (RA) – Founder of Hanafi fiqh.",
+
+  // ──────────────── RAJAB ────────────────
+  "1-7": "Beginning of Rajab – One of the sacred months.",
+  "13-7": "Birth of Hazrat Ali (RA) – Symbol of bravery, justice, and wisdom.",
+  "22-7": "Urs of Imam Jafar Sadiq (RA).",
+  "27-7": "Shab-e-Meraj – The Night Journey and Ascension of Prophet Muhammad ﷺ.",
+
+  // ──────────────── SHABAN ────────────────
+  "1-8": "Start of Shaban – Month of preparation before Ramadan.",
+  "15-8": "Shab-e-Barat – Night of forgiveness and mercy (Laylatul Bara'ah).",
+
+  // ──────────────── RAMADAN ────────────────
+  "1-9": "Start of Ramadan – Month of fasting, Quran, and spiritual purification.",
+  "10-9": "First Ashra of Ramadan – Mercy of Allah.",
+  "15-9": "Mid-Ramadan – Reflection and consistency in worship.",
+  "20-9": "Second Ashra ends – Forgiveness period.",
+  "21-9": "Beginning of Last Ashra – Seeking Laylatul Qadr.",
+  "27-9": "Laylatul Qadr – The Night of Power, better than a thousand months.",
+  "29-9": "Potential Last Fast – Moon sighting awaited.",
+  "30-9": "Completion of Ramadan – Gratitude and reflection.",
+
+  // ──────────────── SHAWWAL ────────────────
+  "1-10": "Eid-ul-Fitr – Celebration marking the end of Ramadan.",
+  "2-10": "Fasting of Shawwal begins – Six fasts recommended.",
+  "6-10": "Completion of Six Fasts of Shawwal – Equal to fasting whole year (hadith).",
+
+  // ──────────────── DHUL-QADAH ────────────────
+  "1-11": "Start of Dhul-Qadah – One of the sacred months.",
+  "11-11": "Birth of Imam Raza (RA) – According to some narrations.",
+
+  // ──────────────── DHUL-HIJJAH ────────────────
+  "1-12": "Beginning of Dhul-Hijjah – Sacred month of Hajj.",
+  "8-12": "Day of Tarwiyah – Preparation for Hajj.",
+  "9-12": "Day of Arafah – Greatest day for forgiveness; fasting highly recommended.",
+  "10-12": "Eid-ul-Adha – Festival of sacrifice and obedience.",
+  "11-12": "Ayyam-ut-Tashreeq – Days of remembrance and gratitude.",
+  "12-12": "Ayyam-ut-Tashreeq – Continued remembrance of Allah.",
+  "13-12": "Last Day of Tashreeq – Completion of Hajj rituals."
 };
+
 
 // Add this mapping to your dashboard.js
 const hijriMonths = {
